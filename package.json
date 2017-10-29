@@ -25,11 +25,14 @@
   },
   "homepage": "https://github.com/duongcuong4395/MEAN-With-Angular2-Blog#readme",
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.18.2",
     "crypto": "^1.0.1",
     "express": "^4.16.2",
     "mongojs": "^2.4.1",
     "mongoose": "^4.12.4",
-    "nodemon": "^1.12.1"
+    "nodemon": "^1.12.1",
+    "sudo": "^1.0.3"
   },
   "devDependencies": {
     "@angular/cli": "^1.4.9"
