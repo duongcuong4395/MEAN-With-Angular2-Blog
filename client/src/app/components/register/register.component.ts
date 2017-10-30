@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
+import { AuthService } from '../../services/auth.service';
+
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -10,18 +14,34 @@ export class RegisterComponent implements OnInit {
 
 	form: FormGroup;
 
+	//bootstrap class
+	messageClass; 
+	//message show if action err or success
+	message; 
+	processing = false;
 
-	constructor( private formBuilder: FormBuilder ) { 
-		this.createForm();
+	emailValid;
+	emailMessage;
+
+	usernameValid;
+	usernameMessage;
+
+	constructor( private formBuilder: FormBuilder, private authService: AuthService, private router: Router ) { 
+		//create Angular 2 form when component loads
+		this.createForm(); 
 	}
 
+	//function create register user form
 	createForm(){
 		this.form = this.formBuilder.group({
 			email: ['', Validators.compose([
+				//validate require
 				Validators.required,
+				//max and min length character
 				Validators.minLength(5),
 				Validators.maxLength(30),
-				this.validateEmail
+				//custom validation
+				this.validateEmail 
 			])],
 			username: ['',  Validators.compose([
 				Validators.required,
@@ -42,10 +62,24 @@ export class RegisterComponent implements OnInit {
 				this.validatePassword
 			])]
 		}, {
+			//validate copare password and comfirm password
 			validator: this.matchingPasswords('password', 'confirm')
 		})
 	}
 
+	disableForm() {
+		this.form.controls['email'].disable();
+		this.form.controls['username'].disable();
+		this.form.controls['password'].disable();
+		this.form.controls['confirm'].disable();
+	}
+
+	enableForm(){
+		this.form.controls['email'].enable();
+		this.form.controls['username'].enable();
+		this.form.controls['password'].enable();
+		this.form.controls['confirm'].enable();
+	}
 
 	validateEmail(controls) {
 		const regExp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
@@ -84,8 +118,57 @@ export class RegisterComponent implements OnInit {
 		};
 	}
 
+	//function to submit form register user
 	onRegisterSubmit(){
+		this.processing = true;
+		this.disableForm();
+		const user = {
+			email: this.form.get('email').value,
+			username: this.form.get('username').value,
+			password: this.form.get('password').value
+		}
+
+		//data: json (exp: res.json({ success: true, message: 'User saved!'}) from authenticationjs (server))
+		this.authService.registerUser(user).subscribe(data => {
+			//console.log(data); //show data on console(F12) window web
+			if(!data.success){
+				this.messageClass = 'alert alert-danger';
+				this.message = data.message;
+				this.processing = false;
+				this.enableForm();
+			} else {
+				this.messageClass = 'alert alert-success';
+				this.message = data.message;
+				setTimeout(() => {
+					this.router.navigate(['/login']);
+				}, 2000)
+			}
+		});
 		console.log(this.form)
+	}
+
+	checkUsername(){
+		this.authService.checkUsername(this.form.get('username').value).subscribe(data => {
+			if(!data.success){
+				this.usernameValid = false;
+				this.usernameMessage = data.message;
+			} else {
+				this.usernameValid = true;
+				this.usernameMessage = data.message;
+			}
+		});
+	}
+
+	checkEmail(){
+		this.authService.checkEmail(this.form.get('email').value).subscribe(data => {
+			if(!data.success){
+				this.emailValid = false;
+				this.emailMessage = data.message;
+			} else {
+				this.emailValid = true;
+				this.emailMessage = data.message;
+			}
+		});
 	}
 
   ngOnInit() {
