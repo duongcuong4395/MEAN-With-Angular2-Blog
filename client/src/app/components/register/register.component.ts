@@ -141,7 +141,7 @@ export class RegisterComponent implements OnInit {
 				this.message = data.message;
 				setTimeout(() => {
 					this.router.navigate(['/login']);
-				}, 2000)
+				}, 2000);
 			}
 		});
 		console.log(this.form)
