@@ -8,7 +8,7 @@
 <form [formGroup]="form" (submit)="onRegisterSubmit()">
 	<div class="form-group">
 		<label for="username">Username</label>
-		<div [ngClass]="{'has-error': (form.controls.username.errors && form.controls.username.dirty) || (!usernameValid && form.controls.username.dirty),'has-success': !form.controls.email.errors && usernameValid}">
+		<div [ngClass]="{'has-error': (form.controls.username.errors && form.controls.username.dirty) || (!usernameValid && form.controls.username.dirty),'has-success': !form.controls.username.errors && usernameValid}">
 			<input type="text" name="username" class="form-control" autocomplete="off" placeholder="username" formControlName="username" (blur)="checkUsername()">	
 			<ul class="help-block">
 				<li *ngIf="form.controls.username.errors?.required && form.controls.username.dirty"> This field is required</li>

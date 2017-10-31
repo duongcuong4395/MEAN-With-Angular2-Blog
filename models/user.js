@@ -123,21 +123,30 @@ const userSchema = new Schema({
   }
 });
 
-//en crypt by hash(password)
+//encrypt by hash(password)
+//Schema middleware to encrypt password
 userSchema.pre('save', function(next) {
+  //ensure password is new or modified applying encryption
   if(!this.isModified('password')) return next();
 
   //bcrypt hash password
+  //apply encryption
   bcrypt.hash(this.password, null, null, (err, hash) => {
+    //ensure no errors
     if(err) return next(err);
+    //apply encryption to password
     this.password = hash;
+    //exit middleware
     next();
   });
 });
 
-userSchema.methods.comparePassword = (password) =>{
+//compare password to encrypted password upon login
+userSchema.methods.comparePassword = function(password) {
   //will return true or false
+  //return compare of login password to password in database (true/false)
   return bcrypt.compareSync(password, this.password);
 }
 
+//exports module/Schema
 module.exports = mongoose.model('User', userSchema);
