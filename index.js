@@ -16,6 +16,7 @@ const config = require('./config/database');
 const path = require('path');
 //import Authentication routes
 const authentication = require('./routes/authentication')(router);
+const blogs = require('./routes/blogs')(router);
 //parse incoming request bodies in a middleware before your handlers, available under the req.body(req:request) property
 const bodyParser = require('body-parser');
 
@@ -47,6 +48,7 @@ app.use(bodyParser.json());
 //provide static directory for front-ent
 app.use(express.static(__dirname + '/client/dist/'));
 app.use('/authentication', authentication);
+app.use('/blogs', blogs);
 
 //connect server to angular 2 Index.html
 //create route "/" (requet/response)

@@ -1,9 +1,13 @@
 //user.js
 const mongoose = require('mongoose');
+//config mongoose promise
 mongoose.Promise = global.Promise;
+//import schema for mongoose
 const Schema = mongoose.Schema;
 
-const bcrypt = require('bcrypt-nodejs');//hash
+//hash
+//native js bcrypt library for node js
+const bcrypt = require('bcrypt-nodejs');
 //Validation
 //Valid Email
 let emailLengthChecker = (email) =>{
