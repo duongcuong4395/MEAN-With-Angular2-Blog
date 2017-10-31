@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { AuthGuard } from '../../guards/auth.guard';
 
 @Component({
   selector: 'app-login',
@@ -17,11 +18,13 @@ export class LoginComponent implements OnInit {
 	//message show if action err or success
 	message; 
 	processing = false;
+	previousUrl;
 	
 	constructor(
 		private formBuilder: FormBuilder,
 		private authService: AuthService,
-		private router: Router
+		private router: Router,
+		private authGuard: AuthGuard
 	) { 
 		//create Angular 2 form when component loads
 		this.createForm(); 
@@ -61,18 +64,29 @@ export class LoginComponent implements OnInit {
 			username: this.form.get('username').value,
 			password: this.form.get('password').value
 		}
+		//send login data to api
 		this.authService.login(user).subscribe(data => {
+			//check if response was success or error
 			if(!data.success){
 				this.messageClass = 'alert alert-danger'; 
+				//show error message
 				this.message = data.message;
+				//enable submit button
 				this.processing = false;
+				//enable form for edit
 				this.enableForm();
 			} else {
 				this.messageClass = 'alert alert-success'; 
 				this.message = data.message;
+				//store user's token in client local storage
 				this.authService.storeUserData(data.token, data.user);
+				//load dashboard page after 2 seccond
 				setTimeout(() => {
-					this.router.navigate(['/dashboard']);
+					if(this.previousUrl){
+						this.router.navigate([this.previousUrl]);
+					} else {
+						this.router.navigate(['/dashboard']);
+					} 
 				}, 2000);
 				//this.processing = true;
 				//this.disableForm();
@@ -81,6 +95,13 @@ export class LoginComponent implements OnInit {
 	}
 
 	ngOnInit() {
+		//check auth redirect
+		if(this.authGuard.redirectUrl){
+			this.messageClass = 'alert alert-danger';
+			this.message = 'You must be to login page';
+			this.previousUrl = this.authGuard.redirectUrl;
+			this.authGuard.redirectUrl = undefined;
+		}
 	}
 
 }
