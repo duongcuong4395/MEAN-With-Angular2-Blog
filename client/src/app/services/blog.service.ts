@@ -28,4 +28,10 @@ export class BlogService {
   		return this.http.post(this.domain + '/blogs/newBlog', blog, this.options).map(res => res.json());
   	}
 
+    getAllBlogs(){
+      //create headers
+      this.createAuthenticationHeaders();
+      return this.http.get(this.domain + '/blogs/allBlogs', this.options).map(res => res.json());
+    }
+
 }

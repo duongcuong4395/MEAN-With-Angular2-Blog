@@ -54,24 +54,24 @@
 </div>
 
 <div *ngIf="!newPost">
-	<div class="panel panel-primary">
+	<div class="panel panel-primary" *ngFor="let blog of blogPosts">
 		<div class="panel-heading">
-			<h3 class="panel-title">Title</h3>
+			<h3 class="panel-title">{{ blog.title }}</h3>
 		</div>
 		<div class="panel-body">
-			body
+			{{ blog.body }}
 		</div>
 		<div class="panel-footer">
-			<p><strong>Post by:</strong> .....</p>
-			<p><strong>Date:</strong> ....</p>
-			<div>
-				<p><strong>Likes: </strong>...</p>
-				<p><strong>Dislikes: </strong>...</p>
+			<p><strong>Post by:</strong> {{ blog.createdBy }}</p>
+			<p><strong>Date:</strong> {{ blog.createdAt | date: 'dd/MM/yyyy'}}</p>
+			<div *ngIf="username === blog.username">
+				<p><strong>Likes: </strong>{{ blog.likes }}</p>
+				<p><strong>Dislikes: </strong>{{ blog.dislikes }}</p>
 			</div>
-			<a href=""><button type="button" name="button" class="btn btn-sm btn-info">Edit</button></a>
-			<a href=""><button type="button" name="button" class="btn btn-sm btn-danger">Delete</button></a>
+			<a [routerLink]="['/edit-blog/', blog._id]" *ngIf="username === blog.createdBy"><button type="button" name="button" class="btn btn-sm btn-info">Edit</button></a>
+			<a [routerLink]="['/delete-blog/', blog._id]" *ngIf="username === blog.createdBy"><button type="button" name="button" class="btn btn-sm btn-danger">Delete</button></a>
 			<div class="dropdown">
-				<button type="button" name="button" class="btn btn-sm btn-success">
+				<button type="button" name="button" class="btn btn-sm btn-success" *ngIf="username !== blog.createdBy">
 					<span class="glyphicon glyphicon-thumbs-up
 ">&nbsp;</span>Likes: ...
 				</button>
@@ -83,7 +83,7 @@
 			</div>
 
 			<div class="dropdown">
-				<button type="button" name="button" class="btn btn-sm btn-warning">
+				<button type="button" name="button" class="btn btn-sm btn-warning" *ngIf="username !== blog.createdBy">
 					<span class="glyphicon glyphicon-thumbs-down">&nbsp;</span>Dislikes: ...
 				</button>
 				<div class="dropdown-content">

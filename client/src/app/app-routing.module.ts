@@ -11,11 +11,24 @@ import { BlogComponent } from './components/blog/blog.component';
 import { AuthGuard } from './guards/auth.guard';
 import { NotAuthGuard } from './guards/notAuth.guard';
 
+//component: LoginComponent - Login route
+//canActivate: [AuthGuard] - user must be logged in to view this route
+//canActivate: [NotAuthGuard] - user must Not be logged in to view this route
+//path: '**' catch-all route
 const appRoutes: Routes = [
 	{ path: '', component: HomeComponent },
 	{ path: 'dashboard' , component: DashboardComponent, canActivate: [AuthGuard]},
-  { path: 'login' , component: LoginComponent, canActivate: [NotAuthGuard]},
-  { path: 'profile' , component: ProfileComponent, canActivate: [AuthGuard]},
+  { 
+    path: 'login' , 
+    component: LoginComponent, 
+    canActivate: [NotAuthGuard]
+  },
+
+  { 
+    path: 'profile' , 
+    component: ProfileComponent, 
+    canActivate: [AuthGuard]
+  },
   { path: 'register' , component: RegisterComponent, canActivate: [NotAuthGuard]},
   { path: 'blog' , component: BlogComponent, canActivate: [AuthGuard]},
 	{ path: '**' , component: HomeComponent}
