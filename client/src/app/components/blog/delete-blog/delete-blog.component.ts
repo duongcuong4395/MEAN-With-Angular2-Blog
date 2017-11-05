@@ -16,7 +16,6 @@ export class DeleteBlogComponent implements OnInit {
 	processing = false;
 	blog;
 	currentUrl;
-	currentUrlid;
 
 	constructor(
 		private blogService: BlogService,
@@ -53,7 +52,6 @@ export class DeleteBlogComponent implements OnInit {
 					createdBy: data.blog.createdBy,
 					createdAt: data.blog.createdAt
 				}
-				this.currentUrlid = this.currentUrl.id;
 				this.foundBlog = true;
 			}
 		});
