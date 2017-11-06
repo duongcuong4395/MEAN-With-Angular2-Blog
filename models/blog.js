@@ -61,10 +61,10 @@ const bodyValidators = [
 
 //valid comment
 let commentLengthChecker = (comment) => {
-    if(!comment[0]){
+    if(!comment){
       return false;
     }else{
-      if (comment[0].length < 8 || comment[0].length > 200) {
+      if (comment.length < 8 || comment.length > 200) {
         return false;
       }else{
         return true;
@@ -107,7 +107,7 @@ const blogSchema = new Schema({
 	comments: [
 		{
 			comment: { 
-				type:String,
+				type: String,
 				validate: commentValidators
 			},
 			commentator: { type:String }

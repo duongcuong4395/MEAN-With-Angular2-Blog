@@ -17,9 +17,13 @@ export class BlogComponent implements OnInit {
 	loadingBlogs = false;
 
 	form;
+	commentForm;
+
 	processing = false;
 	username;
 	blogPosts;
+	newComment = [];
+	enabledComments = [];
 
 	constructor(
 		private formBuilder: FormBuilder,
@@ -27,6 +31,7 @@ export class BlogComponent implements OnInit {
 		private blogService: BlogService
 	) { 
 		this.createNewBlogForm();
+		this.createCommentForm();
 	}
 
 	//function create register user form
@@ -110,9 +115,7 @@ export class BlogComponent implements OnInit {
 		}, 2000);
 	}
 
-	draftComment(){
-	//fd
-	}
+	
 
 	goBack(){
 		window.location.reload();
@@ -136,6 +139,67 @@ export class BlogComponent implements OnInit {
 		
 			this.getAllBlogs();
 		});
+	}
+
+	createCommentForm() {
+		this.commentForm = this.formBuilder.group({
+			comment: ['', Validators.compose([
+				Validators.required,
+				Validators.minLength(8),
+				Validators.maxLength(200)
+			])]
+		});
+	}
+
+	draftComment(id) {
+		this.commentForm.reset();
+		this.newComment = [];
+		this.newComment.push(id);
+	}
+
+	postComment(id) {
+		this.disableCommentForm();
+		this.processing = true;
+		const comment = this.commentForm.get('comment').value;
+		this.blogService.postComment(id, comment).subscribe(data =>{
+			//this.messageClass = 'alert alert-danger';
+			//this.message = data.message;	
+
+			this.getAllBlogs();
+			const index = this.newComment.indexOf(id);
+			this.newComment.splice(index, 1);
+			this.enableCommentForm();
+			this.commentForm.reset();
+			this.processing = false;
+			if(this.enabledComments.indexOf(id) < 0) {
+				this.expand(id);
+			}
+		});
+	}
+
+	cancelSubmission(id) {
+		const index = this.newComment.indexOf(id);
+		this.newComment.splice(index, 1);
+		this.commentForm.reset();
+		this.enableCommentForm();
+		this.processing =false;
+	}
+
+	expand(id) {
+		this.enabledComments.push(id);
+	}
+
+	collapse(id) {
+		const index = this.enabledComments.indexOf(id);
+		this.enabledComments.splice(index, 1);
+	}
+
+	enableCommentForm() {
+		this.commentForm.get('comment').enable();
+	}
+
+	disableCommentForm() {
+		this.commentForm.get('comment').disable();
 	}
 
 	ngOnInit() {
