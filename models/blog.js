@@ -78,6 +78,7 @@ const commentValidators = [
 }
 ];
 
+//Blog model defination
 const blogSchema = new Schema({
 	title: { 
 		type: String, required: true, validate: titleValidators

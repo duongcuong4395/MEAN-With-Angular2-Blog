@@ -176,6 +176,7 @@ module.exports = (router) => {
 	}); 
 	
 
+	//router api profile of user 
 	router.get('/profile', (req, res) => {
 		User.findOne({_id: req.decoded.userId}).select('username email').exec((err, user) => {
 			if(err){
@@ -190,5 +191,27 @@ module.exports = (router) => {
 		});
 		//res.send(req.decoded);
 	});
+
+	router.get('/publicProfile/:username', (req, res) => {
+		if(!req.params.username) {
+			res.json({success: false, message: 'No user name provided'});
+		} else {
+			User.findOne({username: req.params.username}).select('username email').exec((err, user) => {
+				if(err) {
+					//return errors
+					res.json({success: false, message: err});
+				} else {
+					if(!user) {
+						//return user not found
+						res.json({success: false, message: 'Database not found by username: ' + req.params.username});
+					} else {
+						//return user found out
+						res.json({success: true, user: user});
+					}
+				}
+			});
+		}
+	});
+
 	return router;
 }
