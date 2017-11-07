@@ -7,7 +7,7 @@ const app = express();
 //create a new route object
 const router = express.Router();
 //create port for server listen
-const port = 3000;
+const port = process.env.PORT || 3000;
 //node tool for mongodb
 const mongoose = require('mongoose');
 //mongoose config
@@ -46,14 +46,14 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 //provide static directory for front-ent
-app.use(express.static(__dirname + '/client/dist/'));
+app.use(express.static(__dirname + '/public'));
 app.use('/authentication', authentication);
 app.use('/blogs', blogs);
 
 //connect server to angular 2 Index.html
 //create route "/" (requet/response)
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname + '/client/dist/index.html'));
+  res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 
 //http://localhost:port

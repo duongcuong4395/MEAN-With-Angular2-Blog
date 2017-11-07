@@ -12,7 +12,8 @@ import { AuthGuard } from '../../guards/auth.guard';
 })
 export class LoginComponent implements OnInit {
 
-	form: FormGroup;
+	//form: FormGroup;
+	form;
 	//bootstrap class
 	messageClass; 
 	//message show if action err or success
@@ -22,7 +23,7 @@ export class LoginComponent implements OnInit {
 	
 	constructor(
 		private formBuilder: FormBuilder,
-		private authService: AuthService,
+		public authService: AuthService,
 		private router: Router,
 		private authGuard: AuthGuard
 	) { 

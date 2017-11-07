@@ -12,8 +12,8 @@ import { Router } from '@angular/router';
 })
 export class RegisterComponent implements OnInit {
 
-	form: FormGroup;
-
+	//form: FormGroup;
+	form;
 	//bootstrap class
 	messageClass; 
 	//message show if action err or success
@@ -28,7 +28,7 @@ export class RegisterComponent implements OnInit {
 
 	constructor( 
 		private formBuilder: FormBuilder, 
-		private authService: AuthService, 
+		public authService: AuthService, 
 		private router: Router 
 	) { 
 		//create Angular 2 form when component loads
