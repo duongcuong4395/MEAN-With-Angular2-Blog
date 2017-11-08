@@ -10,6 +10,8 @@ import { BlogComponent } from './components/blog/blog.component';
 import { EditBlogComponent } from './components/blog/edit-blog/edit-blog.component';
 import { DeleteBlogComponent } from './components/blog/delete-blog/delete-blog.component';
 import { PublicProfileComponent } from './components/public-profile/public-profile.component';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
 
 import { AuthGuard } from './guards/auth.guard';
 import { NotAuthGuard } from './guards/notAuth.guard';
@@ -38,6 +40,8 @@ const appRoutes: Routes = [
     canActivate: [AuthGuard]
   },
   { path: 'register' , component: RegisterComponent, canActivate: [NotAuthGuard]},
+  { path: 'forgotpassword' , component: ForgotPasswordComponent, canActivate: [NotAuthGuard]},
+  { path: 'changepassword/:username/:email' , component: ChangePasswordComponent, canActivate: [NotAuthGuard]},
   { path: 'blog' , component: BlogComponent, canActivate: [AuthGuard]},
   { path: 'edit-blog/:id' , component: EditBlogComponent, canActivate: [AuthGuard]},
   { path: 'delete-blog/:id' , component: DeleteBlogComponent, canActivate: [AuthGuard]},

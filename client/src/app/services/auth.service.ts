@@ -7,7 +7,7 @@ import { tokenNotExpired } from 'angular2-jwt';
 @Injectable()
 export class AuthService {
 
-	domain = "";
+	domain = "http://localhost:3000";
 
   authToken;
   user;
@@ -83,4 +83,11 @@ export class AuthService {
     return this.http.get(this.domain + '/authentication/publicProfile/' + username, this.options).map(res => res.json());
   }
 
+  forgotpasswordUser(user) {
+    return this.http.post(this.domain + '/authentication/forgotpassword', user, this.options).map(res => res.json());
+  }
+
+  changePasswordUser(username, email, user) {
+    return this.http.put(this.domain + '/authentication/changepassword/'+ username + '/'+ email, user, this.options).map(res => res.json());
+  }
 }

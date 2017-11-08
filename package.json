@@ -31,12 +31,16 @@
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
     "crypto": "^1.0.1",
+    "ejs": "^2.5.7",
     "express": "^4.16.2",
     "jsonwebtoken": "^8.1.0",
     "mongojs": "^2.4.1",
     "mongoose": "^4.12.4",
+    "nodemailer": "^4.3.1",
+    "nodemailer-express-handlebars": "^2.0.0",
     "nodemon": "^1.12.1",
-    "sudo": "^1.0.3"
+    "sudo": "^1.0.3",
+    "xoauth2": "^1.2.0"
   },
   "devDependencies": {
     "@angular/cli": "^1.4.9"

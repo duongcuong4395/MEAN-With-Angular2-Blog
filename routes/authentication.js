@@ -4,6 +4,11 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const config = require('../config/database');
 
+const hbs = require('nodemailer-express-handlebars');
+const nodemailer = require('nodemailer');
+const xoauth2 = require('xoauth2');
+
+
 //create API
 module.exports = (router) => {
 
@@ -157,7 +162,7 @@ module.exports = (router) => {
 		}
 	});
 
-	
+	/*
 	router.use((req, res, next) => {
 		const token = req.headers['authorization'];
 		if(!token){
@@ -174,7 +179,7 @@ module.exports = (router) => {
 			});
 		}
 	}); 
-	
+	*/
 
 	//router api profile of user 
 	router.get('/profile', (req, res) => {
@@ -211,6 +216,166 @@ module.exports = (router) => {
 				}
 			});
 		}
+	});
+
+	router.post('/forgotpassword', (req,res) => {
+		if(!req.body.username) {
+			res.json({success: false, message: 'No username was not provided'});
+		} else {
+			if(!req.body.email) {
+				res.json({success: false, message: 'No email was not provided'});
+			} else {
+				User.findOne({username: req.body.username, email: req.body.email}, (err, user) => {
+					if(err) {
+						res.json({success: false, message: 'user not fonnd: ' + err});
+					} else {
+						var transporter = nodemailer.createTransport({
+							service: 'gmail',
+							auth: {
+								type: 'OAuth2',
+								user: 'dangduongcuong@gmail.com',
+								clientId: '970404624406-0gd5lf64a0sv4norfqamkd5iddmfgccl.apps.googleusercontent.com',
+								clientSecret: 'IIUt6bOFahV7lTe-VHG03-ik',
+								refreshToken: '1/fxDoSxcx7FkK4kg6Jnv_241MWl_2RZkJZtpp8t3SZmE'	
+							},
+						});
+
+						//content mail
+						transporter.use('compile', hbs({
+							//path file email
+							viewPath: 'views',
+							extName: '.ejs'
+
+						}));
+
+						var username = req.body.username;
+						var email = req.body.email;
+
+
+							// send mail with defined transport object
+						transporter.sendMail({
+							from: 'duongcuong <dangduongcuong@gmail.com>',
+							to: email,
+							subject: 'test nodemailer send mail',
+							template: 'mail',
+							context: {
+								username,
+								email
+							}
+
+							//if(error){
+							   // console.log('send mail error: ' + error);
+							//}else{
+							 //  console.log('sended mail: ');
+							//}
+
+							// if you don't want to use this transport object anymore, uncomment following line
+							//transporter.close(); // shut down the connection pool, no more messages
+							}, function(err, response) {
+								if(err){
+									//res.send('send: ' + err);
+									res.json({success: false, message: 'send mail err' + err});
+									//console.log('send mail err: ' + err);
+								} else {
+									res.json({success: true, message: 'sended mail'});
+									//res.send('Dang ky thanh cong');
+								}
+						})
+						//res.json({success: true, message: 'found user', user: user});
+					}
+				});
+			}
+		}
+	});
+
+	router.put('/changepassword/:username/:email', (req, res) => {
+		if(!req.params.username) {
+			res.json({success: false, message: 'No username was not provided'});
+		} else {
+			if (!req.params.email) {
+				res.json({success: false, message: 'No email was not provided'});	
+			} else {
+				if(!req.body.password) {
+					res.json({success: false, message: 'No email was not provided'});
+				} else {
+
+					User.findOne({username: req.params.username, email: req.params.email}, (err, user) => {
+						if(err) {
+							res.json({success: false, message: 'user find err: ' + err});
+						} else {
+							if(!user) {
+								res.json({success: false, message: 'user not found', username: req.params.username, email: req.params.email});
+							} else {
+								user.password = req.body.password;
+								user.save((err) => {
+									if(err){
+										res.json({success: false, message: 'Change faild: ' + err});
+									} else {
+										res.json({success: true, message: 'Changed password'});
+									}
+								});
+							}
+						}
+					});
+				}
+			}
+			
+		}
+	});
+
+	router.post('/sendmail', (req, res) => {
+		var transporter = nodemailer.createTransport({
+			service: 'gmail',
+			auth: {
+				type: 'OAuth2',
+				user: 'dangduongcuong@gmail.com',
+				clientId: '970404624406-0gd5lf64a0sv4norfqamkd5iddmfgccl.apps.googleusercontent.com',
+				clientSecret: 'IIUt6bOFahV7lTe-VHG03-ik',
+				refreshToken: '1/fxDoSxcx7FkK4kg6Jnv_241MWl_2RZkJZtpp8t3SZmE'	
+			},
+		});
+
+		//content mail
+		transporter.use('compile', hbs({
+			//path file email
+			viewPath: 'views',
+			extName: '.ejs'
+
+		}));
+
+		var username = req.body.ten;
+		var email = req.body.email;
+		var password = req.body.password;
+
+
+			// send mail with defined transport object
+		transporter.sendMail({
+			from: 'duongcuong <dangduongcuong@gmail.com>',
+			to: email,
+			subject: 'test nodemailer send mail',
+			template: 'mail',
+			context: {
+				username,
+				email,
+				password
+			}
+
+			//if(error){
+			   // console.log('send mail error: ' + error);
+			//}else{
+			 //  console.log('sended mail: ');
+			//}
+
+			// if you don't want to use this transport object anymore, uncomment following line
+			//transporter.close(); // shut down the connection pool, no more messages
+		}, function(err, response) {
+			if(err){
+				res.send('dang ky that bai: ' + err);
+				console.log('send mail err: ' + err);
+			} else {
+				res.send('Dang ky thanh cong');
+			}
+		})
 	});
 
 	return router;

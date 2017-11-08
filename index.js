@@ -22,6 +22,11 @@ const bodyParser = require('body-parser');
 
 const cors = require('cors');
 
+
+
+app.set('view engine', 'ejs');
+app.set('views', './views');
+
 //database connection
 mongoose.Promise = global.Promise;
 mongoose.connect(config.uri, (err) => {
