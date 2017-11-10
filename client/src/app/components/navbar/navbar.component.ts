@@ -31,11 +31,13 @@ export class NavbarComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.authService.getProfile().subscribe(profile => {
-      this.username = profile.user.username;
-      this.email = profile.user.email;
-      this.image = 'assets/images/' + profile.user.image;
-    });
+    if(this.authService.loggedIn()) {
+      this.authService.getProfile().subscribe(profile => {
+        this.username = profile.user.username;
+        this.email = profile.user.email;
+        this.image = 'assets/images/' + profile.user.image;
+      });
+    }
   }
 
 }
