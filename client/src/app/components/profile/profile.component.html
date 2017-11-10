@@ -1,5 +1,18 @@
+<style type="text/css">
+	.imageprofile{
+		height: 50px;
+		width: 50px;
+	}
+</style>
+
 <h1 class="page-header"> My profile</h1>
 <ul class="list-group">
 	<li class="list-group-item">Username: {{ username }}</li>
 	<li class="list-group-item">Email: {{ email }}</li>
+	<li class="list-group-item">
+		avatar:  <img src='{{image}}' class="imageprofile img-thumbnail img-responsive img-circle" alt="noimage">
+	</li>
 </ul>
+<div>
+	
+</div>

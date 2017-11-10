@@ -27,7 +27,8 @@ module.exports = (router) => {
 					const blog = new Blog ({
 						title: req.body.title,
 						body: req.body.body,
-						createdBy: req.body.createdBy
+						createdBy: req.body.createdBy,
+						avatarPost: './assets/images/' + req.body.avatarPost
 					});
 					blog.save((err) => {
 						if (err) {

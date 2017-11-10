@@ -89,6 +89,9 @@ const blogSchema = new Schema({
 	createdBy: { 
 		type: String 
 	},
+  avatarPost: {
+    type: String
+  },
 	createdAt: { 
 		type: Date, default: Date.now() 
 	},

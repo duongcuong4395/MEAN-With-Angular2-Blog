@@ -21,7 +21,10 @@ export class BlogComponent implements OnInit {
 
 	processing = false;
 	username;
+	avatarPost;
 	blogPosts;
+	imagheUserPosts;
+
 	newComment = [];
 	enabledComments = [];
 
@@ -69,7 +72,8 @@ export class BlogComponent implements OnInit {
 		const blog = {
 			title: this.form.get('title').value,
 			body: this.form.get('body').value,
-			createdBy: this.username
+			createdBy: this.username,
+			avatarPost: this.avatarPost
 		}
 
 		this.blogService.newBlog(blog).subscribe(data => {
@@ -123,7 +127,12 @@ export class BlogComponent implements OnInit {
 
 	getAllBlogs() {
 		this.blogService.getAllBlogs().subscribe(data => {
-			this.blogPosts = data.blogs;
+			if(!data.success) {
+				this.messageClass = 'alert alert-danger';
+				this.message = data.message;
+			} else{
+				this.blogPosts = data.blogs;
+			}
 		});
 	}
 
@@ -205,6 +214,7 @@ export class BlogComponent implements OnInit {
 	ngOnInit() {
 		this.authService.getProfile().subscribe(profile => {
 			this.username = profile.user.username;
+			this.avatarPost = profile.user.image;
 		});
 		this.getAllBlogs();
 	}

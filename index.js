@@ -22,10 +22,50 @@ const bodyParser = require('body-parser');
 
 const cors = require('cors');
 
-
-
+//for upload file
+var multer = require('multer');
+app.use(express.static("resources"));
 app.set('view engine', 'ejs');
 app.set('views', './views');
+
+//specify the folder which will contain your files, in our case ‘uploads’ and set your headers and content type
+// specify the folder
+app.use(express.static(path.join(__dirname, 'resources')));
+// headers and content type
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+// comes multer with very straight forward examples on the npm website
+var storage = multer.diskStorage({
+  // destination
+  destination: function (req, file, cb) {
+    // cb(null, './resources/')
+    cb(null, './client/src/assets/images/')
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+var upload = multer({ storage: storage });
+
+//Finally, you expose the endpoint which will be attacked on the angular part
+app.post("/upload", upload.array("uploads[]", 12), (req, res) => {
+	if(req.files.length < 1) {
+    res.json({success: false, message: 'No file choose'});
+  } else {
+    res.json({success: true, message: 'Number file choosen is: ' + req.files.length, namefile: req.files[0].originalname});
+  }
+  /*if(err) {
+  	res.json({success: false, message: 'upload file err: ' + err});
+  } else {  	
+  	res.json({success: true, message: 'uploaded'});
+  	 console.log('files', req.files);
+  	res.send(req.files.originalname);
+  } */
+});
 
 //database connection
 mongoose.Promise = global.Promise;

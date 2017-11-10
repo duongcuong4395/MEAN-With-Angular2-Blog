@@ -5,6 +5,9 @@ import { AuthService } from '../../services/auth.service';
 
 import { Router } from '@angular/router';
 
+import { Http, Headers, RequestOptions } from '@angular/http';
+import 'rxjs/add/operator/map';
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -25,11 +28,18 @@ export class RegisterComponent implements OnInit {
 
 	usernameValid;
 	usernameMessage;
+	filesToUpload: Array<File> = [];
+	numfilechoose = 0;
+	imagevalid;
+	imagechooen = false;
+	imageName;
+
 
 	constructor( 
 		private formBuilder: FormBuilder, 
 		public authService: AuthService, 
-		private router: Router 
+		private router: Router,
+		private http: Http
 	) { 
 		//create Angular 2 form when component loads
 		this.createForm(); 
@@ -126,15 +136,61 @@ export class RegisterComponent implements OnInit {
 	onRegisterSubmit(){
 		this.processing = true;
 		this.disableForm();
+
+		const formData: any = new FormData();
+		const files: Array<File> = this.filesToUpload;
+		for(let i =0; i < files.length; i++){
+		    formData.append("uploads[]", files[i], files[i]['name']);
+		}
+
 		const user = {
 			email: this.form.get('email').value,
 			username: this.form.get('username').value,
-			password: this.form.get('password').value
+			password: this.form.get('password').value,
+			image: this.imageName
 		}
+
+		this.authService.uploadFile(formData).subscribe(data => {
+			if(!data.success) {
+				this.messageClass = 'alert alert-danger';
+				this.message = data.message + data.image;
+				this.imagechooen = false;
+			} else {
+				this.authService.registerUser(user).subscribe(data => {
+					//console.log(data); //show data on console(F12) window web
+					if(!data.success){
+						this.messageClass = 'alert alert-danger';
+						this.message = data.message;
+						this.processing = false;
+						this.enableForm();
+					} else {
+						this.messageClass = 'alert alert-success';
+						this.message = data.message;
+						setTimeout(() => {
+							this.router.navigate(['/login']);
+						}, 2000);
+					}
+				});
+			}
+		});
+
+		/*
+	    this.http.post('/upload',formData).map(res => res.json()).subscribe(data => {
+	    	if(!data.success) {
+				this.messageClass = 'alert alert-danger';
+				this.message = data.message;
+				this.imagechooen = false;
+			} else {
+				this.messageClass = 'alert alert-success';
+				this.imageName = data.namefile;
+				this.message = 'Server have gotten flie:' + this.imageName;
+				this.imagechooen = true;
+			}
+	    });
+
 
 		//data: json (exp: res.json({ success: true, message: 'User saved!'}) from authenticationjs (server))
 		this.authService.registerUser(user).subscribe(data => {
-			//console.log(data); //show data on console(F12) window web
 			if(!data.success){
 				this.messageClass = 'alert alert-danger';
 				this.message = data.message;
@@ -147,8 +203,8 @@ export class RegisterComponent implements OnInit {
 					this.router.navigate(['/login']);
 				}, 2000);
 			}
-		});
-		console.log(this.form)
+		}); 
+		*/
 	}
 
 	checkUsername(){
@@ -175,7 +231,58 @@ export class RegisterComponent implements OnInit {
 		});
 	}
 
-  ngOnInit() {
-  }
+	checkSelectFile() {
+		if(this.numfilechoose > 0) {
+			this.imagevalid = true;
+		} else {
+			this.imagevalid = false;
+		}
+	}
+
+
+	//upload file
+	upload() {
+		const formData: any = new FormData();
+		const files: Array<File> = this.filesToUpload;
+
+		for(let i =0; i < files.length; i++){
+		    formData.append("uploads[]", files[i], files[i]['name']);
+		}
+	    this.http.post('http://localhost:3000/upload',formData).map(res => res.json()).subscribe(data => {
+	    	if(!data.success) {
+				this.messageClass = 'alert alert-danger';
+				this.message = data.message;
+				this.imagechooen = false;
+			} else {
+				this.messageClass = 'alert alert-success';
+				this.imageName = data.namefile;
+				this.message = 'Server have gotten flie:' + this.imageName;
+				this.imagechooen = true;
+			}
+	    });
+	}
+
+	fileChangeEvent(fileInput: any) {
+	    this.filesToUpload = <Array<File>>fileInput.target.files;
+	    const filechoose: Array<File> = this.filesToUpload;
+
+	    this.numfilechoose = filechoose.length;
+	    const file = fileInput.target.files[0];
+
+	    if(this.numfilechoose > 0) {
+	    	this.imagevalid = true;
+	    	this.imagechooen = true;
+	    	
+    		this.imageName = file.name;
+	    } else {
+	    	this.imagechooen = false;
+	    	this.imagevalid = false;
+	    }
+
+	    //this.product.photo = fileInput.target.files[0]['name'];
+	}
+
+	ngOnInit() {
+	}
 
 }

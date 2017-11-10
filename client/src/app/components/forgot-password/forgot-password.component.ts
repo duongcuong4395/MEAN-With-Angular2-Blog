@@ -100,7 +100,7 @@ export class ForgotPasswordComponent implements OnInit {
 				this.enableForm();
 			} else {
 				this.messageClass = 'alert alert-success';
-				this.message = data.message;
+				this.message = 'We have sent an email to ' + user.email + '.';
 			}
 		});
 		console.log(this.form)

@@ -1,16 +1,227 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title></title>
-</head>
-<body>
-	<h1>chuyen den trang lay mat khau</h1>
-	<p>Tai khoan cua ban la</p>
-	<ul>
-		<li>{{username}}</li>
-		<li>{{email}}</li>
-	</ul>
-	<p>click vao <a href="http://localhost:4200/changepassword/{{username}}/{{email}}">day </a></p>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="Duong Cuong">
+
+    <style>
+
+
+body
+{
+  font-size:       62.5%; 
+  margin:          0;
+  padding:         0;
+  background-color: #000;
+  font-family:     'lucida grande', arial, tahoma, sans-serif;
+}
+
+#container
+{
+  margin:          0 auto;
+  padding-top:20px;
+  width:           683px;
+  position:        relative;
+  background-color:  #333;
+}
+
+#header
+{
+  margin:          0 auto;
+  width:           640px;
+  height:          250px;
+  background:      transparent url('https://www.wildirishseaweeds.com/wp-content/uploads/2016/11/blog.jpg') top left no-repeat;
+  background-repeat:no-repeat;
+background-size: 100%;
+background-position:center;
+}
+
+.headtitle
+{
+  position:        relative;
+  font-family:     Times;
+  font-size:       30px;
+  color:           #FFF;
+  top:             210px;
+  left:            12px;
+}
+
+#menu
+{
+  margin:          0 20px;
+  height:          29px;
+  padding:         5px 0;
+}
+
+#menu ul
+{
+  margin:          0;
+  padding:         7px;
+
+  height:          29px;
+}
+
+#menu ul li
+{
+  list-style:      none;
+  display:         inline;
+}
+
+#menu ul li a:link, #menu ul li a:active, #menu ul li a:visited
+{
+  color:           #767676; 
+  padding:         10px 7px 10px 7px;
+  font-size:       1em;
+
+  font-family:     'lucida grande', arial, sans-serif;
+  font-weight:     bold;
+  text-decoration: none;
+}
+
+#menu ul li a:hover
+{
+  background-color:   #6A7919;
+  color:           #FDFDFD;
+}
+
+
+#content
+{
+  min-height:      390px;
+  width:           640px;
+  margin:          0 auto;
+  background-color:#FDFDFD;
+}
+
+#insidecontent
+{
+  float:           left;
+  padding-left:    25px;
+  padding-right:    25px;
+  width:           auto;
+}
+
+#insidecontent p
+{
+  margin:          0;
+  color:           #767676;
+  font-family:     Tahoma;
+  font-size:       1.2em;
+  line-height:     170%;
+}
+
+
+
+
+h1
+{
+  margin:          0;
+  font-weight:     normal;
+  color:           #6A7919;
+  font-size:       2.5em;
+  font-family:Times;
+}
+
+h2
+{
+  margin:          0;
+  display:         inline;
+  position:        relative;
+  top:             -1.5em;
+  left:            2em;
+  font-size:       1.8em;
+  font-weight:     normal;
+  color:           #94c258;
+}
+
+h3
+{
+  margin:          0;
+  font-size:       1.5em;
+  font-weight:     normal;
+  color:           #94C258;
+}
+
+#footer
+{
+  margin:          0 auto;
+  width:           641px;
+  height:          39px;
+
+}
+
+#footer span
+{
+  display:         block;
+  position:        relative;
+  font-family:    Tahoma;
+  font-size:       1.2em;
+  padding:         10px;
+  color:           #767676;
+}
+    </style>
+
+  </head>
+
+  <body>
+
+
+<div id="container"> 
+
+  <div id="header"></div>
+
+  <div id="menu"> 
+    <ul>
+      <li><a href="#" title="">HOME</a></li>
+      <li><a href="#" title="">ABOUT US</a></li>
+      <li><a href="#" title="">NEWS</a></li>
+      <li><a href="#" title="">CONTACT US</a></li>
+      <li><a href="#" title="">LINKS</a></li>
+
+    </ul>
+  </div>
+
+
+  <div id="content"> 
+
+    <div id="insidecontent"> <br>
+      <h1>Dear {{username}}</h1>
+
+      <p>
+    As per your request, here are the usernames and accounts associated with the email address {{email}}:
+   <br><br>
+    </p>
+      <p>
+        Account: {{username}}
+        <br>
+        Username: {{username}}
+   <br><br>
+    </p>
+     <p>
+    To get pasword, go to <a href="http://localhost:4200/changepassword/{{username}}/{{email}}"> here </a>and enter the password and confim password.
+    </p>
+    <br><br>
+    <p>If you have any questions or comments please email us anytime at dangduongcuong@gmail.com.</p>
+    </div>
+
+    
+
+    <div style="clear: both;"></div>
+
+  </div>
+
+
+
+  <div id="footer"> <span>Copyright © 2005 | All Rights Reserved  </span> 
+  </div>
+
+</div>
+
+
+
+  </body>
 </html>

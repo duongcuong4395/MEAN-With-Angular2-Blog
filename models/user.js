@@ -124,6 +124,9 @@ const userSchema = new Schema({
   	type: String,
   	required: true,
     validate: passwordValidators
+  }, 
+  image: {
+    type: String
   }
 });
 

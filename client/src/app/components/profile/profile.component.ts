@@ -11,8 +11,8 @@ export class ProfileComponent implements OnInit {
 
 	username;
 	email;
-
-
+  image;
+  
   constructor(
   	private authService: AuthService
   ) { 
@@ -23,6 +23,7 @@ export class ProfileComponent implements OnInit {
   	this.authService.getProfile().subscribe(profile => {
   		this.username = profile.user.username;
   		this.email = profile.user.email;
+      this.image = 'assets/images/' + profile.user.image;
   	});
   }
 
