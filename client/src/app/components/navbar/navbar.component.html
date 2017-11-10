@@ -26,10 +26,10 @@
               <a *ngIf="authService.loggedIn()" routerLink="/blog">Blog</a>
             </li>
             <li>
-              <a *ngIf="!authService.loggedIn()" routerLink="/login">Login</a>
-            </li>
-            <li>
               <a *ngIf="authService.loggedIn()" href="#" (click)="onLogoutClick()">Logout</a>
+            </li>
+             <li>
+              <a *ngIf="!authService.loggedIn()" routerLink="/login">Login</a>
             </li>
             <li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{extract: true}">
               <a *ngIf="!authService.loggedIn()" routerLink="/register">Register</a>

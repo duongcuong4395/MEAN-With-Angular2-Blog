@@ -43,7 +43,7 @@ var storage = multer.diskStorage({
   // destination
   destination: function (req, file, cb) {
     // cb(null, './resources/')
-    cb(null, './public/assets/images/')
+    cb(null, './assets/images/')
   },
   filename: function (req, file, cb) {
     cb(null, file.originalname);
