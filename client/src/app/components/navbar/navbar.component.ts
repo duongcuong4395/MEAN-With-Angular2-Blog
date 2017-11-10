@@ -37,7 +37,12 @@ export class NavbarComponent implements OnInit {
         this.email = profile.user.email;
         this.image = 'assets/images/' + profile.user.image;
       });
+    } else {
+        this.username = '';
+      this.email = '';
+      this.image = '';
     }
+
   }
 
 }
