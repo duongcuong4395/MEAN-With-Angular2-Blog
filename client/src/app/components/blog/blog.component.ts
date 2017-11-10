@@ -23,7 +23,6 @@ export class BlogComponent implements OnInit {
 	username;
 	avatarPost;
 	blogPosts;
-	imagheUserPosts;
 
 	newComment = [];
 	enabledComments = [];
