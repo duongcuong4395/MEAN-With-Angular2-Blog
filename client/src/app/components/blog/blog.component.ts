@@ -4,6 +4,8 @@ import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms'
 import { AuthService } from '../../services/auth.service';
 import { BlogService } from '../../services/blog.service';
 
+import * as socket_io from 'socket.io-client';
+
 @Component({
   selector: 'app-blog',
   templateUrl: './blog.component.html',
@@ -19,13 +21,20 @@ export class BlogComponent implements OnInit {
 	form;
 	commentForm;
 
-	processing = false;
 	username;
+	idUser;
 	avatarPost;
-	blogPosts;
+	userAuthorizationWithBlogCreate = false;
+	userAuthorizationWithBlogEdit = false;
+	userAuthorizationWithBlogDelete = false;
 
+	blogPosts;
 	newComment = [];
 	enabledComments = [];
+	titleBlog;
+	processing = false;
+
+	socket;
 
 	constructor(
 		private formBuilder: FormBuilder,
@@ -71,9 +80,11 @@ export class BlogComponent implements OnInit {
 		const blog = {
 			title: this.form.get('title').value,
 			body: this.form.get('body').value,
-			createdBy: this.username,
+			userCreatedBlog: this.username,
+			idUserCreatedBlog: this.idUser,
 			avatarPost: this.avatarPost
 		}
+		this.titleBlog = this.form.get('title').value;
 
 		this.blogService.newBlog(blog).subscribe(data => {
 			if(!data.success){
@@ -91,6 +102,7 @@ export class BlogComponent implements OnInit {
 					this.message = false;
 					this.form.reset();
 					this.enableNewBlogForm();
+					this.socket.emit('client-write-blog', {creatorBlog: this.username, titleBlog: this.titleBlog});
 				}, 2000);
 			}
 		});
@@ -137,15 +149,28 @@ export class BlogComponent implements OnInit {
 
 	likeBlog(id) {
 		this.blogService.likeBlog(id).subscribe(data => {
-			
-			this.getAllBlogs();
+			if(!data.success) {
+				this.messageClass = 'alert alert-danger';
+				this.message = data.message;
+			} else {
+				this.messageClass = 'alert alert-success';
+				this.message = data.message;
+				this.getAllBlogs();
+			}
 		});
 	}
 
 	dislikeBlog(id) {
 		this.blogService.dislikeBlog(id).subscribe(data => {
 		
-			this.getAllBlogs();
+			if(!data.success) {
+				this.messageClass = 'alert alert-danger';
+				this.message = data.message;
+			} else {
+				this.messageClass = 'alert alert-success';
+				this.message = data.message;
+				this.getAllBlogs();
+			}
 		});
 	}
 
@@ -212,9 +237,44 @@ export class BlogComponent implements OnInit {
 
 	ngOnInit() {
 		this.authService.getProfile().subscribe(profile => {
-			this.username = profile.user.username;
-			this.avatarPost = profile.user.image;
+			this.idUser = profile.user._id;
+			this.avatarPost = profile.user.userAuthorization.photo;
+			this.username = profile.user.userAuthorization.username;
+			this.userAuthorizationWithBlogCreate = profile.user.userAuthorization.authWithBlog.create;
+			this.userAuthorizationWithBlogEdit = profile.user.userAuthorization.authWithBlog.create;
+			this.userAuthorizationWithBlogDelete = profile.user.userAuthorization.authWithBlog.create;
 		});
+
+		//listen socket
+    	this.socket = socket_io("http://localhost:9697");
+
+    	//client listen server emit 
+    	this.socket.on('server-response-client-write-blog', (dataServerSend) => {
+    		setTimeout(()=>{
+				this.messageClass = 'alert alert-success';
+    			this.message = dataServerSend.creatorBlog + ' has just finished writing the blog: ' + dataServerSend.titleBlog + '.';
+			}, 2000);
+    	});
+
+    	//client listen server emit 
+    	this.socket.on('server-response-client-edit-blog', (dataServerSend) => {
+    		setTimeout(()=>{
+				this.messageClass = 'alert alert-success';
+				if(dataServerSend.oldTitleBlog == dataServerSend.newTitleBlog){
+					this.message = dataServerSend.creatorBlog + ' has just finished edit blog: ' + dataServerSend.oldTitleBlog + '.';
+				} else {
+					this.message = dataServerSend.creatorBlog + ' has just finished edit form blog: ' + dataServerSend.oldTitleBlog + ' to ' + dataServerSend.newTitleBlog + '.';
+				}
+			}, 2000);
+    	});
+
+    	//client listen server emit 
+    	this.socket.on('server-response-client-delete-blog', (dataServerSend) => {
+    		setTimeout(()=>{
+				this.messageClass = 'alert alert-success';
+    			this.message = dataServerSend.creatorBlog + ' has just finished delete blog: ' + dataServerSend.titleBlog + '.';
+			}, 2000);
+    	});
 		this.getAllBlogs();
 	}
 

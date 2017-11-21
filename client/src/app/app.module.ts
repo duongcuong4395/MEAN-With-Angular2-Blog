@@ -19,12 +19,14 @@ import { DeleteBlogComponent } from './components/blog/delete-blog/delete-blog.c
 import { PublicProfileComponent } from './components/public-profile/public-profile.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { CheckauthloginComponent } from './components/checkauthlogin/checkauthlogin.component';
 
 import { AuthService } from './services/auth.service';
 import { BlogService } from './services/blog.service';
 
 import { AuthGuard } from './guards/auth.guard';
 import { NotAuthGuard } from './guards/notAuth.guard';
+
 
 
 
@@ -46,7 +48,8 @@ import { NotAuthGuard } from './guards/notAuth.guard';
     DeleteBlogComponent,
     PublicProfileComponent,
     ForgotPasswordComponent,
-    ChangePasswordComponent
+    ChangePasswordComponent,
+    CheckauthloginComponent
   ],
   imports: [
     BrowserModule,

@@ -49,6 +49,14 @@ export class AuthService {
   	} 
   }
 
+  getProfileWithID(idUser) {
+    return this.http.get(this.domain + '/authentication/profileWithID/' + idUser, this.options).map(res => res.json());
+  }
+
+  socialLogin(authName, name, idUser) {
+    return this.http.post(this.domain + '/authentication/sociallogin/' + authName + '/' + name + '/' + idUser, this.options).map(res => res.json());
+  }
+
   login(user) {
     return this.http.post(this.domain + '/authentication/login', user).map(res => res.json());
   }
@@ -84,6 +92,11 @@ export class AuthService {
   getProfile() {
     this.createAuthenticationHeaders();
     return this.http.get(this.domain + '/authentication/profile', this.options).map(res => res.json());
+  }
+
+  createUsername(user) {
+    this.createAuthenticationHeaders();
+    return this.http.put(this.domain + '/authentication/createUsername', user, this.options).map(res => res.json());
   }
 
   

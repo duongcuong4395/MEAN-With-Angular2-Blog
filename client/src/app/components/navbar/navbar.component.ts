@@ -3,6 +3,8 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { FlashMessagesService } from 'angular2-flash-messages';
 
+import * as socket_io from 'socket.io-client';
+
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
@@ -13,14 +15,15 @@ export class NavbarComponent implements OnInit {
   username;
   email;
   image;
+  name;
+
+  socket;
 
   constructor(
   	public authService: AuthService,
   	private router: Router,
   	private flashMessagesService: FlashMessagesService
-  ) { 
-
-  }
+  ) { }
 
   onLogoutClick(){
   	this.authService.logout();
@@ -33,16 +36,17 @@ export class NavbarComponent implements OnInit {
   ngOnInit() {
     if(this.authService.loggedIn()) {
       this.authService.getProfile().subscribe(profile => {
-        this.username = profile.user.username;
-        this.email = profile.user.email;
-        this.image = 'assets/images/' + profile.user.image;
+        this.image = profile.user.userAuthorization.photo;
+        this.username = profile.user.userAuthorization.username;
+        this.name = profile.user.userAuthorization.name;
       });
     } else {
-        this.username = '';
+        this.username = 'sdfsdf';
       this.email = '';
       this.image = '';
     }
 
+    //listen socket
+    this.socket = socket_io("http://localhost:9697");
   }
-
 }

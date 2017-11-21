@@ -12,6 +12,7 @@ import { DeleteBlogComponent } from './components/blog/delete-blog/delete-blog.c
 import { PublicProfileComponent } from './components/public-profile/public-profile.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { CheckauthloginComponent } from './components/checkauthlogin/checkauthlogin.component';
 
 import { AuthGuard } from './guards/auth.guard';
 import { NotAuthGuard } from './guards/notAuth.guard';
@@ -23,6 +24,12 @@ import { NotAuthGuard } from './guards/notAuth.guard';
 const appRoutes: Routes = [
 	{ path: '', component: HomeComponent },
 	{ path: 'dashboard' , component: DashboardComponent, canActivate: [AuthGuard]},
+  { 
+    path: 'checkauthlogin/:authName/:idUser',
+    component: CheckauthloginComponent, 
+    canActivate: [NotAuthGuard]
+  },
+
   { 
     path: 'login' , 
     component: LoginComponent, 

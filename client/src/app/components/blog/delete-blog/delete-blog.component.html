@@ -32,7 +32,7 @@
 		</div>
 		<div class="panel-footer">
 			<strong>Posted by: </strong> {{ blog.createdBy }}
-			<strong>Date: </strong> {{ blog.createdAt | date: 'dd/MM/yyyy'}}
+			<strong>Date: </strong> {{ blog.createdAt.date }}/{{ blog.createdAt.month }}/{{ blog.createdAt.year }}
 		</div>
 	</div>
 </div>

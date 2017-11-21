@@ -1,0 +1,24 @@
+<style type="text/css">
+	.imageprofile{
+		height: 50px;
+		width: 50px;
+	}
+</style>
+
+<hr>
+	<div class="container">
+		<div class="row show-hide-message">
+			<div [ngClass]="messageClass">
+				{{ message }}
+			</div>
+		</div>
+		<h3>Your profile after login with this authorization.</h3>
+		<p> Authorization: {{authLoginName}} </p>
+		<p> Username: {{name}} </p>
+		<p> Avatar : <img src='{{photo}}' class="imageprofile img-thumbnail img-responsive img-circle" alt="noimage"> </p>
+		<p style="color: blue;">Do you want choose this authorization to login?</p> 
+		<br>
+		<button class="btn btn-success" (click)="loginWithAuth()">Yes. I agree.</button>
+		<button class="btn btn-danger" (click)="logoutWithAuth()">No. I want to choose another authorization to login.</button>	
+	</div>
+<hr>

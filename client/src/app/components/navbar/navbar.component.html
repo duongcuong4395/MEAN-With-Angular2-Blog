@@ -1,3 +1,9 @@
+<style type="text/css">
+  .imageprofile{
+    height: 50px;
+    width: 50px;
+  }
+</style>
   <!-- Fixed navbar -->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
@@ -19,20 +25,35 @@
             <li *ngIf="authService.loggedIn()" [routerLinkActive]="['active']" [routerLinkActiveOptions]="{extract: true}">
               <a routerLink="/dashboard">Dashboard</a>
             </li>
-            <li>
+            <!-- <li>
               <a *ngIf="authService.loggedIn()" routerLink="/profile">Profile</a>
             </li>
             <li>
-              <a *ngIf="authService.loggedIn()" routerLink="/blog">Blog</a>
-            </li>
-            <li>
               <a *ngIf="authService.loggedIn()" href="#" (click)="onLogoutClick()">Logout</a>
-            </li>
-             <li>
+            </li> -->
+            <li>
               <a *ngIf="!authService.loggedIn()" routerLink="/login">Login</a>
             </li>
             <li [routerLinkActive]="['active']" [routerLinkActiveOptions]="{extract: true}">
               <a *ngIf="!authService.loggedIn()" routerLink="/register">Register</a>
+            </li>
+            <li>
+              <a *ngIf="authService.loggedIn()" routerLink="/blog"><i class="fa fa-pencil-square-o fa-fw"></i> Blog</a>
+            </li>
+            <li *ngIf="authService.loggedIn()" class="dropdown">
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#" aria-expanded="false">
+                    <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-user">
+                    <li><a routerLink="/profile"><i class="fa fa-user fa-fw"></i> Your Profile</a>
+                    </li>
+                    <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li><a href="#" (click)="onLogoutClick()"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
+                    </li>
+                </ul>
+                <!-- /.dropdown-user -->
             </li>
           </ul>
         </div><!--/.nav-collapse -->

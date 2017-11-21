@@ -5,6 +5,8 @@ import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { AuthGuard } from '../../guards/auth.guard';
 
+import * as socket_io from 'socket.io-client';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -20,6 +22,8 @@ export class LoginComponent implements OnInit {
 	message; 
 	processing = false;
 	previousUrl;
+
+	socket;
 	
 	constructor(
 		private formBuilder: FormBuilder,
@@ -57,6 +61,22 @@ export class LoginComponent implements OnInit {
 		this.form.controls['password'].enable();
 	}
 
+	loginfacebook() {
+
+		window.location.href='/auth/facebook';
+		/*
+		this.authService.loginfacebook().subscribe(data => {
+			if(data.succsess) {
+				this.messageClass = 'alert alert-danger';
+				this.message = data.message;
+			} else {
+				this.messageClass = 'alert alert-success';
+				this.message = data.message;
+			}
+		});
+		*/
+	}
+
 	onLoginSubmit(){
 		this.processing = true;
 		this.disableForm();
@@ -83,6 +103,7 @@ export class LoginComponent implements OnInit {
 				this.authService.storeUserData(data.token, data.user);
 				//load dashboard page after 2 seccond
 				setTimeout(() => {
+					this.socket.emit("client-login", this.form.get('username').value);
 					if(this.previousUrl){
 						this.router.navigate([this.previousUrl]);
 					} else {
@@ -103,6 +124,9 @@ export class LoginComponent implements OnInit {
 			this.previousUrl = this.authGuard.redirectUrl;
 			this.authGuard.redirectUrl = undefined;
 		}
+
+		//listen socket
+    	this.socket = socket_io("http://localhost:9697");
 	}
 
 }

@@ -5,31 +5,43 @@
 		{{ message }}
 	</div>
 </div>
-<form [formGroup]="form" (submit)="onLoginSubmit()">
-	<div class="form-group">
-		<label for="username">Username</label>
-		<div [ngClass]="{'has-error': form.controls.username.errors && form.controls.username.dirty,'has-success': form.controls.username.valid &&  form.controls.username.dirty}">
-			<input type="text" name="username" class="form-control" autocomplete="off" formControlName="username">
-			<ul class="help-block">
-				<li *ngIf="form.controls.username.errors?.required && form.controls.username.dirty"> 
-					This field is required
-				</li>
-			</ul>
+<div class="row">
+	<div class="col-md-6">
+		<h2>Login</h2>
+		<form [formGroup]="form" (submit)="onLoginSubmit()">
+			<div class="form-group">
+				<label for="username">Username</label>
+				<div [ngClass]="{'has-error': form.controls.username.errors && form.controls.username.dirty,'has-success': form.controls.username.valid &&  form.controls.username.dirty}">
+					<input type="text" name="username" class="form-control" autocomplete="off" formControlName="username">
+					<ul class="help-block">
+						<li *ngIf="form.controls.username.errors?.required && form.controls.username.dirty"> 
+							This field is required
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="form-group">
+				<label for="password">Password</label>
+				<div [ngClass]="{'has-error': form.controls.password.errors && form.controls.password.dirty,'has-success': form.controls.password.valid && form.controls.password.dirty}">
+					<input type="password" name="password" class="form-control" autocomplete="off" formControlName="password">
+					<ul class="help-block">
+						<li *ngIf="form.controls.password.errors?.required && form.controls.password.dirty"> 
+							This field is required
+						</li>
+					</ul>
+				</div>
+			</div>	
+			<input [disabled]="!form.valid || processing" type="submit" class="btn btn-primary" value="submit">
+		</form>
+	</div>
+	<div class="col-md-6">
+		<h2>Social login</h2>
+		<div class="row">
+			<button class="btn btn-primary" (click)="loginfacebook()"><span class="fa fa-facebook"></span> Login with facebook</button>
 		</div>
 	</div>
-	<div class="form-group">
-		<label for="password">Password</label>
-		<div [ngClass]="{'has-error': form.controls.password.errors && form.controls.password.dirty,'has-success': form.controls.password.valid && form.controls.password.dirty}">
-			<input type="password" name="password" class="form-control" autocomplete="off" formControlName="password">
-			<ul class="help-block">
-				<li *ngIf="form.controls.password.errors?.required && form.controls.password.dirty"> 
-					This field is required
-				</li>
-			</ul>
-		</div>
-	</div>	
-	<input [disabled]="!form.valid || processing" type="submit" class="btn btn-primary" value="submit">
-</form>
+</div>
+
 <!--
 <p>Username: {{ form.controls.username.value }}</p>
 <p>email: {{ form.controls.email.value }}</p>

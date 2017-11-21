@@ -7,19 +7,29 @@
 		font-weight: bold;
 		color: blue;
 	}
+
+	.fixedElement {
+	    position:fixed;
+	    top: 60px;
+	    right: 60px;
+	    z-index: 999999999;
+	}
 </style>
 
 <h1 class="page-header">blog</h1>
 
-<div class="row show-hide-message" *ngIf="message">
+<div class="row show-hide-message fixedElement" *ngIf="message">
 	<div [ngClass]="messageClass">
 		{{ message }}
 	</div>
 </div>
-
-<button name="button" class="btn btn-warning" *ngIf="!newPost" (click)="newBlogForm()">New post</button>
-<button name="button" class="btn btn-default" *ngIf="!newPost" (click)="reloadBlogs()" [disabled]="loadingBlogs" ><span class="glyphicon glyphicon-refresh
-"></span>&nbsp;&nbsp;Reload</button>
+<div *ngIf="userAuthorizationWithBlogCreate">
+	<button name="button" class="btn btn-warning" *ngIf="!newPost" (click)="newBlogForm()">Write post</button>
+	<button name="button" class="btn btn-default" *ngIf="!newPost" (click)="reloadBlogs()" [disabled]="loadingBlogs" ><span class="glyphicon glyphicon-refresh"></span>&nbsp;&nbsp;Reload</button>
+</div>
+<div *ngIf="!userAuthorizationWithBlogCreate">
+	<p style="color: red;">You have not authorization write blog. please complete your profile.</p>
+</div>
 <br>
 <br>
 
@@ -91,7 +101,7 @@
 			{{ blog.body }}
 		</div>
 		<div class="panel-footer">
-			<p><strong>Date:</strong> {{ blog.createdAt | date: 'dd/MM/yyyy'}}</p>
+			<p><strong>Date: </strong> {{ blog.createdAt.date }}/{{ blog.createdAt.month }}/{{ blog.createdAt.year }}</p>
 			<div >
 				<div>
 					<p [class.isDisabled]="blog.likedBy.indexOf(username) > -1">

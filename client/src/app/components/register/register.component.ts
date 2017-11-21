@@ -28,6 +28,10 @@ export class RegisterComponent implements OnInit {
 
 	usernameValid;
 	usernameMessage;
+
+	nameValid;
+	nameMessage;
+
 	filesToUpload: Array<File> = [];
 	numfilechoose = 0;
 	imagevalid;
@@ -48,12 +52,19 @@ export class RegisterComponent implements OnInit {
 	//function create register user form
 	createForm(){
 		this.form = this.formBuilder.group({
+			name : ['', Validators.compose([
+				Validators.required,
+				Validators.minLength(5),
+				Validators.maxLength(50),
+				//custom validation
+				this.validateName
+			])],
 			email: ['', Validators.compose([
 				//validate require
 				Validators.required,
 				//max and min length character
 				Validators.minLength(5),
-				Validators.maxLength(30),
+				Validators.maxLength(100),
 				//custom validation
 				this.validateEmail 
 			])],
@@ -112,6 +123,14 @@ export class RegisterComponent implements OnInit {
 			return {'validateUsername': true};
 		}
 	}
+	validateName(controls) {
+		const regExp = new RegExp(/^[a-zA-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ ]+$/);
+		if(regExp.test(controls.value)) {
+			return null;
+		} else {
+			return {'validateName': true};
+		}
+	}
 
 	validatePassword(controls) {
 		const regExp = new RegExp(/^(?=.*?[a-z])(?=.*?[A-Z])(?=.*?[\d])(?=.*?[\W]).{8,35}$/);
@@ -146,6 +165,7 @@ export class RegisterComponent implements OnInit {
 		const user = {
 			email: this.form.get('email').value,
 			username: this.form.get('username').value,
+			name: this.form.get('name').value,
 			password: this.form.get('password').value,
 			image: this.imageName
 		}
@@ -241,6 +261,7 @@ export class RegisterComponent implements OnInit {
 
 
 	//upload file
+	/*
 	upload() {
 		const formData: any = new FormData();
 		const files: Array<File> = this.filesToUpload;
@@ -260,7 +281,7 @@ export class RegisterComponent implements OnInit {
 				this.imagechooen = true;
 			}
 	    });
-	}
+	}*/
 
 	fileChangeEvent(fileInput: any) {
 	    this.filesToUpload = <Array<File>>fileInput.target.files;

@@ -13,7 +13,9 @@ export class PublicProfileComponent implements OnInit {
 	currentUrl;
 	user;
 	username;
+  name;
 	email;
+  image;
 	foundProfile = false;
 	message;
 	messageClass;
@@ -30,8 +32,11 @@ export class PublicProfileComponent implements OnInit {
   			this.foundProfile = false;
   		} else {
   			this.foundProfile = true;
-  			this.username = data.user.username;
-  			this.email = data.user.email;
+  			
+        this.email = data.user.userAuthorization.email;
+        this.image = data.user.userAuthorization.photo;
+        this.username = data.user.userAuthorization.username;
+        this.name = data.user.userAuthorization.name;
   		}
   	});
 
