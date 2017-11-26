@@ -23,9 +23,11 @@
     "@angular/router": "^4.2.4",
     "angular2-flash-message": "^1.0.2",
     "angular2-flash-messages": "^1.0.8",
+    "angular2-google-chart": "^2.3.0",
     "angular2-jwt": "^0.2.3",
     "core-js": "^2.4.1",
     "jsonwebtoken": "^8.1.0",
+    "ng2-scroll-to": "^1.0.7",
     "rxjs": "^5.4.2",
     "sudo": "^1.0.3",
     "zone.js": "^0.8.14"

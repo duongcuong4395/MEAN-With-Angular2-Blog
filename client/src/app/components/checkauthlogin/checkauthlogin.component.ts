@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 import { AuthService } from '../../services/auth.service';
+import { SocketService } from '../../services/socket.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import * as socket_io from 'socket.io-client';
 
 @Component({
   selector: 'app-checkauthlogin',
@@ -25,10 +25,9 @@ export class CheckauthloginComponent implements OnInit {
   messageClass;
   message;
 
-  socket;
-
   constructor(
   	private authService : AuthService,
+    public socketService: SocketService,
   	private activatedRoute: ActivatedRoute,
     private router: Router
   ) { }
@@ -44,6 +43,7 @@ export class CheckauthloginComponent implements OnInit {
         this.message = data.message;
         //store user's token in client local storage
         this.authService.storeUserData(data.token, data.user);
+        this.socketService.sendRequestCreateUser(this.username);
         //load dashboard page after 2 seccond
         setTimeout(() => {
           if(this.previousUrl){
@@ -73,13 +73,7 @@ export class CheckauthloginComponent implements OnInit {
         this.photo = data.user.userAuthorization.photo;
         this.name = data.user.userAuthorization.name;
         this.authLoginName = data.user.userAuthorization.authorizationType;
-        //check user login by social have username?
-        if(data.user.userAuthorization.username) {
-          this.username = data.user.userAuthorization.username;
-          //listen socket
-          this.socket = socket_io("http://localhost:9697");
-          this.socket.emit("client-login", this.username);
-        }
+        this.username = data.user.userAuthorization.username;
       }
     });
   }

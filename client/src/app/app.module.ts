@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { AppRoutingModule } from './app-routing.module';
+import {ScrollToModule} from 'ng2-scroll-to'; //angular 2 library to animate scrolling to anchor links.
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
@@ -23,6 +24,7 @@ import { CheckauthloginComponent } from './components/checkauthlogin/checkauthlo
 
 import { AuthService } from './services/auth.service';
 import { BlogService } from './services/blog.service';
+import { SocketService } from './services/socket.service';
 
 import { AuthGuard } from './guards/auth.guard';
 import { NotAuthGuard } from './guards/notAuth.guard';
@@ -58,8 +60,9 @@ import { NotAuthGuard } from './guards/notAuth.guard';
     HttpModule,
     AppRoutingModule,
     FlashMessagesModule,
+    ScrollToModule.forRoot()
   ],
-  providers: [AuthService, BlogService, AuthGuard, NotAuthGuard],
+  providers: [AuthService, BlogService, SocketService, AuthGuard, NotAuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

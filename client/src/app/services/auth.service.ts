@@ -58,7 +58,7 @@ export class AuthService {
   }
 
   login(user) {
-    return this.http.post(this.domain + '/authentication/login', user).map(res => res.json());
+    return this.http.post(this.domain + '/authentication/login', user, this.options).map(res => res.json());
   }
 
   logout(){

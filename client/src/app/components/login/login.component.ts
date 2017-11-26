@@ -2,10 +2,9 @@ import { Component, OnInit } from '@angular/core';
 
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { SocketService } from '../../services/socket.service';
 import { Router } from '@angular/router';
 import { AuthGuard } from '../../guards/auth.guard';
-
-import * as socket_io from 'socket.io-client';
 
 @Component({
   selector: 'app-login',
@@ -23,11 +22,12 @@ export class LoginComponent implements OnInit {
 	processing = false;
 	previousUrl;
 
-	socket;
+	username;
 	
 	constructor(
 		private formBuilder: FormBuilder,
 		public authService: AuthService,
+		public socketService: SocketService,
 		private router: Router,
 		private authGuard: AuthGuard
 	) { 
@@ -85,6 +85,7 @@ export class LoginComponent implements OnInit {
 			username: this.form.get('username').value,
 			password: this.form.get('password').value
 		}
+		this.username = this.form.get('username').value;
 		//send login data to api
 		this.authService.login(user).subscribe(data => {
 			//check if response was success or error
@@ -101,9 +102,9 @@ export class LoginComponent implements OnInit {
 				this.message = data.message;
 				//store user's token in client local storage
 				this.authService.storeUserData(data.token, data.user);
+				this.socketService.sendRequestCreateUser(this.username);
 				//load dashboard page after 2 seccond
 				setTimeout(() => {
-					this.socket.emit("client-login", this.form.get('username').value);
 					if(this.previousUrl){
 						this.router.navigate([this.previousUrl]);
 					} else {
@@ -125,8 +126,7 @@ export class LoginComponent implements OnInit {
 			this.authGuard.redirectUrl = undefined;
 		}
 
-		//listen socket
-    	this.socket = socket_io("http://localhost:9697");
+		
 	}
 
 }

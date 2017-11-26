@@ -295,14 +295,14 @@ module.exports = (router) => {
 			if(!req.body.password) {
 				res.json({ success: false, message: 'password was not provided!'});
 			} else {
-				userAuth.findOne({'userAuthorization.username': req.body.username}, (err, user) => {
+				userAuth.findOne({'userAuthorization.username': req.body.username, 'userAuthorization.authorizationType': 'Local'}, (err, user) => {
 					//check connection error was found
 					if(err) {
 						res.json({ success: false, message: err });
 					} else {
 						if(!user) {
 							//username was not found
-							res.json({ success: false, message: 'Username not found' });
+							res.json({ success: false, message: 'User not found' });
 						} else {
 							//user.comparePassword from models/user.js
 							//get bool value by compare password input with password encrypt in database
@@ -315,7 +315,7 @@ module.exports = (router) => {
 								//wt.sign(payload, secretOrPrivateKey, [options, callback])
 								//expiresIn: expressed in seconds or a string describing a time span zeit/ms. Eg: 60, "2 days", "10h", "7d"
 								const token = jwt.sign({ userId: user._id, authName: 'local', username: req.body.username }, config.secret, { expiresIn: '24h' });
-								res.json({ success: true, message: 'password valid - (success)', token: token, user: {username: user.userAuthorization.name} });
+								res.json({ success: true, message: 'password valid - (success)', token: token, user: {username: user.userAuthorization.username} });
 							}
 						}
 					}

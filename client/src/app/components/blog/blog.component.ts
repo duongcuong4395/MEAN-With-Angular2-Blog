@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
-
 import { AuthService } from '../../services/auth.service';
 import { BlogService } from '../../services/blog.service';
-
-import * as socket_io from 'socket.io-client';
+import { SocketService } from '../../services/socket.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-blog',
@@ -15,6 +14,11 @@ export class BlogComponent implements OnInit {
 
 	messageClass;
 	message;
+
+	isNotificationWroteBlog = false;
+	isNotificationEditBlog = false;
+	isNotificationDeleteBlog = false;
+
 	newPost = false;
 	loadingBlogs = false;
 
@@ -34,12 +38,16 @@ export class BlogComponent implements OnInit {
 	titleBlog;
 	processing = false;
 
-	socket;
+	socketConnection;
+	allActive;
+	usersOnline;
 
 	constructor(
 		private formBuilder: FormBuilder,
 		private authService: AuthService,
-		private blogService: BlogService
+		private blogService: BlogService,
+		private socketService: SocketService,
+		private router: Router
 	) { 
 		this.createNewBlogForm();
 		this.createCommentForm();
@@ -93,16 +101,14 @@ export class BlogComponent implements OnInit {
 				this.processing = false;
 				this.enableNewBlogForm();
 			} else {
-				this.messageClass = 'alert alert-success';
-				this.message = data.message;
-				this.getAllBlogs();
+				//Send request after has been written blog
+				this.socketService.sendRequestWriteBlogSuccess(this.avatarPost, this.username, this.titleBlog);
 				setTimeout(()=>{
 					this.newPost = false;
 					this.processing = false
 					this.message = false;
 					this.form.reset();
 					this.enableNewBlogForm();
-					this.socket.emit('client-write-blog', {creatorBlog: this.username, titleBlog: this.titleBlog});
 				}, 2000);
 			}
 		});
@@ -155,6 +161,7 @@ export class BlogComponent implements OnInit {
 			} else {
 				this.messageClass = 'alert alert-success';
 				this.message = data.message;
+				this.socketService.sendRequestLikeBlogSuccess(this.username, this.avatarPost, data.blog.title);
 				this.getAllBlogs();
 			}
 		});
@@ -169,6 +176,7 @@ export class BlogComponent implements OnInit {
 			} else {
 				this.messageClass = 'alert alert-success';
 				this.message = data.message;
+				this.socketService.sendRequestDislikeBlogSuccess(this.username, this.avatarPost, data.blog.title);
 				this.getAllBlogs();
 			}
 		});
@@ -236,46 +244,63 @@ export class BlogComponent implements OnInit {
 	}
 
 	ngOnInit() {
-		this.authService.getProfile().subscribe(profile => {
-			this.idUser = profile.user._id;
-			this.avatarPost = profile.user.userAuthorization.photo;
-			this.username = profile.user.userAuthorization.username;
-			this.userAuthorizationWithBlogCreate = profile.user.userAuthorization.authWithBlog.create;
-			this.userAuthorizationWithBlogEdit = profile.user.userAuthorization.authWithBlog.create;
-			this.userAuthorizationWithBlogDelete = profile.user.userAuthorization.authWithBlog.create;
-		});
+		//check user logged in
+		if(this.authService.loggedIn()) {
+			//Get profile user after logged in
+			this.authService.getProfile().subscribe(profile => {
+				this.idUser = profile.user._id;
+				this.avatarPost = profile.user.userAuthorization.photo;
+				this.username = profile.user.userAuthorization.username;
+				this.userAuthorizationWithBlogCreate = profile.user.userAuthorization.authWithBlog.create;
+				this.userAuthorizationWithBlogEdit = profile.user.userAuthorization.authWithBlog.create;
+				this.userAuthorizationWithBlogDelete = profile.user.userAuthorization.authWithBlog.create;
+				this.socketService.sendRequestAddUserOnline(this.username, this.avatarPost);
+			});
+			
+			//socket response all requests from client sended
+			//User has been written blog
+	    	this.socketConnection = this.socketService.getResponseWriteBlogSuccess().subscribe(data => {
+	    		this.messageClass = 'alert alert-success';
+	    		this.isNotificationWroteBlog = true;
+	    		this.isNotificationDeleteBlog = false;
+	    		this.isNotificationEditBlog = false;
+	          	this.message = data;
+	          	this.getAllBlogs();
+	    	});
 
-		//listen socket
-    	this.socket = socket_io("http://localhost:9697");
+	    	//User has been edited blog
+	    	this.socketConnection = this.socketService.getResponseEditeBlogSuccess().subscribe(data => {
+	    		this.messageClass = 'alert alert-success';
+	    		this.isNotificationWroteBlog = false;
+	    		this.isNotificationDeleteBlog = false;
+	    		this.isNotificationEditBlog = true;
+	          	this.message = data;
+	          	this.getAllBlogs();
+	    	});
 
-    	//client listen server emit 
-    	this.socket.on('server-response-client-write-blog', (dataServerSend) => {
-    		setTimeout(()=>{
-				this.messageClass = 'alert alert-success';
-    			this.message = dataServerSend.creatorBlog + ' has just finished writing the blog: ' + dataServerSend.titleBlog + '.';
-			}, 2000);
-    	});
+	    	//User has been deleted blog
+	    	this.socketConnection = this.socketService.getResponseDeleteBlogSuccess().subscribe(data => {
+	    		this.isNotificationWroteBlog = false;
+	    		this.isNotificationDeleteBlog = true;
+	    		this.isNotificationEditBlog = false;
+	          	this.getAllBlogs();
+	    	});
 
-    	//client listen server emit 
-    	this.socket.on('server-response-client-edit-blog', (dataServerSend) => {
-    		setTimeout(()=>{
-				this.messageClass = 'alert alert-success';
-				if(dataServerSend.oldTitleBlog == dataServerSend.newTitleBlog){
-					this.message = dataServerSend.creatorBlog + ' has just finished edit blog: ' + dataServerSend.oldTitleBlog + '.';
-				} else {
-					this.message = dataServerSend.creatorBlog + ' has just finished edit form blog: ' + dataServerSend.oldTitleBlog + ' to ' + dataServerSend.newTitleBlog + '.';
-				}
-			}, 2000);
-    	});
+	    	//all active of users
+	    	this.socketConnection = this.socketService.getResponseAllactive().subscribe(data => {
+	    		this.allActive = data;
+	    	});
 
-    	//client listen server emit 
-    	this.socket.on('server-response-client-delete-blog', (dataServerSend) => {
-    		setTimeout(()=>{
-				this.messageClass = 'alert alert-success';
-    			this.message = dataServerSend.creatorBlog + ' has just finished delete blog: ' + dataServerSend.titleBlog + '.';
-			}, 2000);
-    	});
-		this.getAllBlogs();
+	    	//All user online
+	    	this.socketConnection = this.socketService.getResponseUsersOnline().subscribe(data => {
+	    		this.usersOnline = data;
+	    	});
+
+			this.getAllBlogs();
+		} else {
+			//User not logged in return route 'domain/login'(page login)
+			this.router.navigate(['/login']);
+		}
 	}
 
 }

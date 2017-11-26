@@ -7,7 +7,6 @@ import { AuthService } from './auth.service';
 export class BlogService {
 	
 	options;
-	//	domain = "http://localhost:3000";
 	domain = this.authService.domain;
 
   constructor( private authService: AuthService, private http: Http ) { }

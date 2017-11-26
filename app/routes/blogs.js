@@ -253,7 +253,7 @@ module.exports = (router) => {
 													if(err) {
 														res.json({success: false, message: 'Like click faild: ' + err});
 													} else {
-														res.json({success: true, message: 'You liked this blog'});
+														res.json({success: true, message: 'You liked this blog', blog: blog});
 													}
 												});
 											} else {
@@ -265,7 +265,7 @@ module.exports = (router) => {
 													if(err) {
 														res.json({success: false, message: 'Like click faild: ' + err});
 													} else {
-														res.json({success: true, message: 'You liked this blog'});
+														res.json({success: true, message: 'You liked this blog', blog: blog});
 													}
 												});
 											}
@@ -330,7 +330,7 @@ module.exports = (router) => {
 													if(err) {
 														res.json({success: false, message: 'Dislike click faild: ' + err});
 													} else {
-														res.json({success: true, message: 'You disliked this blog'});
+														res.json({success: true, message: 'You disliked this blog', blog: blog});
 													}
 												});
 											} else {
@@ -342,7 +342,7 @@ module.exports = (router) => {
 													if(err) {
 														res.json({success: false, message: 'Dislike click faild: ' + err});
 													} else {
-														res.json({success: true, message: 'You disliked this blog'});
+														res.json({success: true, message: 'You disliked this blog', blog: blog});
 													}
 												});
 											}

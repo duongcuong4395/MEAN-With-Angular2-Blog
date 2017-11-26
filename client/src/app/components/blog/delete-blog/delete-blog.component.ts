@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { BlogService } from '../../../services/blog.service';
 import { AuthService } from '../../../services/auth.service';
 import { ActivatedRoute, Router} from '@angular/router';
+import { SocketService } from '../../../services/socket.service';
 
-import * as socket_io from 'socket.io-client';
 @Component({
   selector: 'app-delete-blog',
   templateUrl: './delete-blog.component.html',
@@ -21,15 +21,15 @@ export class DeleteBlogComponent implements OnInit {
 	currentUrl;
 
 	username;
+	photo;
 	userAuthorizationWithBlogDelete;
-
-	socket;
 
 	constructor(
 		private blogService: BlogService,
 		private activatedRoute: ActivatedRoute,
 		private router: Router,
-		private authService: AuthService
+		private authService: AuthService,
+		private socketService: SocketService
 	) { }
 
 	deleteBlog() {
@@ -41,10 +41,11 @@ export class DeleteBlogComponent implements OnInit {
 			} else {
 				this.messageClass = 'alert alert-success';
 				this.message = data.message;
+				//get notificatetion after deleted blog
+				this.socketService.sendRequestDeleteBlogSuccess(this.photo, this.username, this.titleBlog);
 				setTimeout(() => {
 					this.router.navigate(['/blog']);
-					this.socket.emit('client-delete-blog', {creatorBlog: this.username, titleBlog: this.titleBlog});
-				}, 2000);
+				}, 1000);
 			}
 		});
 	}
@@ -69,11 +70,9 @@ export class DeleteBlogComponent implements OnInit {
 
 		this.authService.getProfile().subscribe(profile => {
 			this.username = profile.user.userAuthorization.username;
+			this.photo = profile.user.userAuthorization.photo;
 			this.userAuthorizationWithBlogDelete = profile.user.userAuthorization.authWithBlog.delete;
 		});
-
-		//listen socket
-    	this.socket = socket_io("http://localhost:9697");
 	}
 
 }

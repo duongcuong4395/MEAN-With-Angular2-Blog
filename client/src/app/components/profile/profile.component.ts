@@ -1,16 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
 import { AuthService } from '../../services/auth.service';
-
+import { SocketService } from '../../services/socket.service';
 import { Router } from '@angular/router';
-
 import { Http, Headers, RequestOptions } from '@angular/http';
-
 import { AuthGuard } from '../../guards/auth.guard';
-
-import * as socket_io from 'socket.io-client';
 
 @Component({
   selector: 'app-profile',
@@ -40,11 +34,10 @@ export class ProfileComponent implements OnInit {
 
   previousUrl;
 
-  socket;
-  
   constructor(
     private formBuilder: FormBuilder, 
     public authService: AuthService, 
+    public socketService: SocketService,
     private router: Router,
     private http: Http,
     private authGuard: AuthGuard
@@ -121,9 +114,9 @@ export class ProfileComponent implements OnInit {
         this.messageClass = 'alert alert-danger';
         this.message = data.message;
         this.disableForm();
+        this.socketService.sendRequestCreateUser(this.username);
         //after 2 second router change to router.navigate([name route]);
         setTimeout(() => {
-          this.socket.emit("client-login", this.username);
           if(this.previousUrl){
             this.router.navigate([this.previousUrl]);
           } else {
@@ -155,9 +148,6 @@ export class ProfileComponent implements OnInit {
       this.previousUrl = this.authGuard.redirectUrl;
       this.authGuard.redirectUrl = undefined;
     }
-
-    //listen socket
-    this.socket = socket_io("http://localhost:9697");
 
   }
 

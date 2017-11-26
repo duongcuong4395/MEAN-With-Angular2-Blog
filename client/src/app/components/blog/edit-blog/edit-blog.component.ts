@@ -3,9 +3,8 @@ import { Location } from '@angular/common';
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BlogService } from '../../../services/blog.service';
 import { AuthService } from '../../../services/auth.service';
+import { SocketService } from '../../../services/socket.service';
 import { ActivatedRoute, Router } from '@angular/router';
-
-import * as socket_io from 'socket.io-client';
 
 @Component({
   selector: 'app-edit-blog',
@@ -23,9 +22,8 @@ export class EditBlogComponent implements OnInit {
 	oldTitleBlog;
 	newTitleBlog;
 
-	socket;
-
 	username;
+	photo;
 	userAuthorizationWithBlogEdit;
 
 	constructor(
@@ -34,7 +32,8 @@ export class EditBlogComponent implements OnInit {
 		private location: Location,
 		private activatedRoute: ActivatedRoute,
 		private router: Router,
-		private authService: AuthService
+		private authService: AuthService,
+		private socketService: SocketService
 	) { }
 
 	updateBlogSubmit(){
@@ -49,11 +48,11 @@ export class EditBlogComponent implements OnInit {
  			} else {
  				this.messageClass = 'alert alert-success';
  				this.message = data.message;
- 				console.log(data.message);
+ 				//Get notification after edited blog
+ 				this.socketService.sendRequestEditeBlogSuccess(this.photo, this.username, this.oldTitleBlog, this.newTitleBlog);
  				setTimeout(() => {
  					this.router.navigate(['/blog']);
- 					this.socket.emit('client-edit-blog', {creatorBlog: this.username, oldTitleBlog: this.oldTitleBlog, newTitleBlog: this.newTitleBlog});
- 				}, 2000);
+ 				}, 1000);
  			}
  		});
 	}
@@ -78,11 +77,9 @@ export class EditBlogComponent implements OnInit {
 
 		this.authService.getProfile().subscribe(profile => {
 			this.username = profile.user.userAuthorization.username;
+			this.photo = profile.user.userAuthorization.photo;
 			this.userAuthorizationWithBlogEdit = profile.user.userAuthorization.authWithBlog.edit;
 		});
-
-		//listen socket
-    	this.socket = socket_io("http://localhost:9697");	
 	}
 
 }
