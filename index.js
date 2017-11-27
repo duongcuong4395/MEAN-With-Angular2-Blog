@@ -115,7 +115,7 @@ app.listen(port, () =>{
 });
 
 
-const socketsPort = 1995;
+const socketsPort =process.env.PORT || 1995;
 const socket = require("socket.io").listen(socketsPort).sockets;
 
 var userArray = [];
