@@ -26,7 +26,6 @@
   },
   "homepage": "https://github.com/duongcuong4395/MEAN-With-Angular2-Blog#readme",
   "dependencies": {
-    "angular-cli": "^1.0.0-beta.28.3",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.18.2",
     "connect-flash": "^0.1.1",
@@ -53,8 +52,5 @@
     "socket.io": "^2.0.4",
     "sudo": "^1.0.3",
     "xoauth2": "^1.2.0"
-  },
-  "devDependencies": {
-    "@angular/cli": "^1.4.9"
   }
 }
