@@ -118,7 +118,7 @@ app.listen(port, () =>{
 
 
 const socketsPort = process.env.PORT || 1995;
-const socket = require("socket.io")(http);
+const socket = require("socket.io").listen(socketsPort).sockets;
 
 var userArray = [];
 var userOnline = [];
