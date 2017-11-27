@@ -19,8 +19,6 @@ const mongoose = require('mongoose');//node tool for mongodb
 const config = require('./app/config/database');//mongoose config
 const path = require('path');//nodejs package for file paths
 
-const http = require('http').Server(app);
-
 const bodyParser = require('body-parser');//parse incoming request bodies in a middleware before your handlers, available under the req.body(req:request) property
 const cors = require('cors');
 const multer = require('multer');
