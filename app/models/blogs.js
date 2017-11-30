@@ -99,7 +99,9 @@ const blogSchema = new Schema({
 				type: String,
 				validate: commentValidators
 			},
-			commentator: { type:String }
+			commentator: { type:String },
+      icon: { type: String },
+      numberIcon: { type : String }
 		}
 	]
 });

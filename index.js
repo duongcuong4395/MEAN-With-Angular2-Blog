@@ -24,14 +24,15 @@ const cors = require('cors');
 const multer = require('multer');
 
 
-var passport = require('passport');
-var flash    = require('connect-flash');
+var passport     = require('passport');
+var flash        = require('connect-flash');
 var morgan       = require('morgan');
 var cookieParser = require('cookie-parser');
 var session      = require('express-session');
 
 const authentication = require('./app/routes/authentication')(router);//import Authentication routes
-const blogs = require('./app/routes/blogs')(router);//import Authentication routes
+const blogs          = require('./app/routes/blogs')(router);//import Authentication routes
+
 //const userAuth = require('./app/routes/authrouter')(router, passport);
 
 // set up our express application
@@ -70,6 +71,7 @@ app.use(bodyParser.json()); // parse application/json
 
 app.use('/authentication', authentication);
 app.use('/blogs', blogs);
+
 
 //specify the folder which will contain your files, in our case ‘uploads’ and set your headers and content type
 // specify the folder
@@ -116,11 +118,39 @@ app.listen(port, () =>{
 
 
 const socketsPort = process.env.PORT || 1995;
-const socket = require("socket.io").listen(socketsPort).sockets;
+//const socket = require("socket.io").listen(socketsPort).sockets;
+const socket = require("socket.io").connect('https://duongcuongblog.herokuapp.com');
 
-var userArray = [];
-var userOnline = [];
-var historyActive = [];
+  var userArray = [];
+  var userOnline = [];
+  var historyActive = [];
+
+
+/*
+  // sending to sender-client only
+socket.emit('message', "this is a test");
+
+// sending to all clients, include sender
+io.emit('message', "this is a test");
+
+// sending to all clients except sender
+socket.broadcast.emit('message', "this is a test");
+
+// sending to all clients in 'game' room(channel) except sender
+socket.broadcast.to('game').emit('message', 'nice game');
+
+// sending to all clients in 'game' room(channel), include sender
+io.in('game').emit('message', 'cool game');
+
+// sending to sender client, only if they are in 'game' room(channel)
+socket.to('game').emit('message', 'enjoy the game');
+
+// sending to all clients in namespace 'myNamespace', include sender
+io.of('myNamespace').emit('message', 'gg');
+
+// sending to individual socketid
+socket.broadcast.to(socketid).emit('message', 'for your eyes only');
+*/
 
 socket.on("connection", (client) => {
     console.log(client.id + " is connected.");
@@ -133,6 +163,9 @@ socket.on("connection", (client) => {
     });
 
     client.on('client-add-user-online', (dataClientSend) => {
+      client.username = dataClientSend.username;
+      console.log('phong chat: ' + dataClientSend.username);
+      client.join(dataClientSend.username);
       if(userArray.indexOf(dataClientSend.username) >=0 ){
         client.emit('server-send-user-already-loggin');
       } else {
@@ -204,12 +237,32 @@ socket.on("connection", (client) => {
       client.broadcast.emit('server-response-client-delete-blog-success', {creatorBlog: dataClientSend.creatorBlog, message: 'has just finished delete blog:', titleBlog: dataClientSend.titleBlog});
     });
 
+    client.on('client-send-call-user-Chat', (dataClientSend) => {
+      socket.in(dataClientSend.username).emit('server-send-call-user-chat', {username: dataClientSend.username, userSendRequest: dataClientSend.userSendRequest, message: 'has invited you to chat.'});
+      console.log('Room chat: ' + dataClientSend.userCallChat);
+    });
+
+    client.on('client-send-comment-blog', (dataClientSend) => {
+      historyActive.unshift({photo: dataClientSend.photo, username: dataClientSend.username, userActive: '' + ' had been commented blog ', blog: dataClientSend.titleBlog});
+      socket.emit('server-send-all-active', {allActive: historyActive});
+    });
+
+    client.on('client-send-load-all', () => {
+      socket.emit('server-send-users-online', {usersOnline: userOnline});
+      socket.emit('server-send-all-active', {allActive: historyActive});
+    });
+
     socket.emit('server-send-username', {username: client.username});
     socket.emit('server-send-users-online', {usersOnline: userOnline});
     socket.emit('server-send-all-active', {allActive: historyActive});
 
-    client.on("send_message", (message) => {
-        console.log(client.id + ":)" + message);
-        sockets.emit("new_message", { from: client.id, text: message });
+    client.on("client-send-message", (dataClientSend) => {
+        socket.emit("server-send-message", { 
+          photo      : dataClientSend.photo,
+          username   : dataClientSend.username, 
+          message    : dataClientSend.message,
+          icon       : dataClientSend.icon,
+          numberIcon : dataClientSend.numberIcon
+        });
     });
 });

@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { 
+	Component, OnInit, AfterViewChecked, ElementRef, ViewChild
+} from '@angular/core';
 import { FormControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { BlogService } from '../../services/blog.service';
@@ -10,7 +12,8 @@ import { ActivatedRoute, Router } from '@angular/router';
   templateUrl: './blog.component.html',
   styleUrls: ['./blog.component.css']
 })
-export class BlogComponent implements OnInit {
+export class BlogComponent implements OnInit, AfterViewChecked {
+	@ViewChild('scrollMe') private myScrollContainer: ElementRef;
 
 	messageClass;
 	message;
@@ -38,9 +41,25 @@ export class BlogComponent implements OnInit {
 	titleBlog;
 	processing = false;
 
+	icons1 = true;
+	icons2 = false;
+	icons3 = false;
+	iconChat;
+	iconComment;
+	numbIcon;
+
+	//all scope for realtime
 	socketConnection;
 	allActive;
 	usersOnline;
+	userChat;
+	messageChat;
+	messagesChat = [];
+	isRequestChat = false;
+	messageCallUserChat;
+	messageCallUserChatClass;
+
+	userComment;
 
 	constructor(
 		private formBuilder: FormBuilder,
@@ -103,6 +122,9 @@ export class BlogComponent implements OnInit {
 			} else {
 				//Send request after has been written blog
 				this.socketService.sendRequestWriteBlogSuccess(this.avatarPost, this.username, this.titleBlog);
+				this.authService.updateHistoryWriteBlog(this.username).subscribe(data => {
+					//dosomething
+				});
 				setTimeout(()=>{
 					this.newPost = false;
 					this.processing = false
@@ -161,6 +183,12 @@ export class BlogComponent implements OnInit {
 			} else {
 				this.messageClass = 'alert alert-success';
 				this.message = data.message;
+				/*
+				this.authService.updateHistoryLikeBlog(this.username).subscribe(data => {
+					this.messageClass = 'alert alert-success';
+					this.message = data.message;
+				});
+				*/
 				this.socketService.sendRequestLikeBlogSuccess(this.username, this.avatarPost, data.blog.title);
 				this.getAllBlogs();
 			}
@@ -176,6 +204,11 @@ export class BlogComponent implements OnInit {
 			} else {
 				this.messageClass = 'alert alert-success';
 				this.message = data.message;
+				/*
+				this.authService.updateHistoryDislikeBlog(this.username).subscribe(data => {
+					//do something
+				});
+				*/
 				this.socketService.sendRequestDislikeBlogSuccess(this.username, this.avatarPost, data.blog.title);
 				this.getAllBlogs();
 			}
@@ -202,16 +235,21 @@ export class BlogComponent implements OnInit {
 		this.disableCommentForm();
 		this.processing = true;
 		const comment = this.commentForm.get('comment').value;
-		this.blogService.postComment(id, comment).subscribe(data =>{
-			//this.messageClass = 'alert alert-danger';
-			//this.message = data.message;	
+		this.userComment = this.commentForm.get('comment').value;
 
+		this.authService.updateHistoryCommentBlog(this.username).subscribe(data => {
+				//dosomething
+			});
+		this.blogService.postComment(id, comment, this.iconChat, this.numbIcon).subscribe(data =>{
 			this.getAllBlogs();
 			const index = this.newComment.indexOf(id);
 			this.newComment.splice(index, 1);
 			this.enableCommentForm();
 			this.commentForm.reset();
 			this.processing = false;
+
+			this.socketService.sendRequestUserComment(this.avatarPost, this.username, this.userComment, data.blog.title);
+
 			if(this.enabledComments.indexOf(id) < 0) {
 				this.expand(id);
 			}
@@ -242,6 +280,74 @@ export class BlogComponent implements OnInit {
 	disableCommentForm() {
 		this.commentForm.get('comment').disable();
 	}
+
+	sendMessage () {
+		this.socketService.sendRequestSendMessage(this.avatarPost, this.username, this.messageChat, this.iconChat, this.numbIcon);
+		this.messageChat = '';
+		this.iconChat = '';
+	}
+
+	sendIcon(icon, numberIcon) {
+		this.iconChat = icon;
+		this.numbIcon = numberIcon;
+		//dosomething
+	}
+
+	ngAfterViewChecked() {        
+        this.scrollToBottom();        
+    }
+
+	scrollToBottom(): void {
+        try {
+            this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+        } catch(err) { }                 
+    }
+
+    callUserChat(username) {
+		this.socketService.sendRequestCallUserChat(username, this.username);
+    }
+
+    showIcons(numberIconShow) {
+    	switch(numberIconShow) {
+    		case 1: {
+    			this.icons1 = true;
+    			this.icons2 = false;
+    			this.icons3 = false;
+    			break;
+    		}
+    		case 2: {
+    			this.icons1 = false;
+    			this.icons2 = true;
+    			this.icons3 = false;
+    			break;
+    		}
+    		case 3: {
+    			this.icons1 = false;
+    			this.icons2 = false;
+    			this.icons3 = true;
+    			break;
+    		}
+    		default :{
+    			this.icons1 = true;
+    			this.icons2 = false;
+    			this.icons3 = false;
+    			break;
+    		}
+    	}
+    }
+
+    loadAll() {
+    	this.socketService.sendRequestloadAll();
+
+    	//all active of users
+    	this.socketConnection = this.socketService.getResponseAllactive().subscribe(data => {
+    		this.allActive = data;
+    	});
+    	//All user online
+    	this.socketConnection = this.socketService.getResponseUsersOnline().subscribe(data => {
+    		this.usersOnline = data;
+    	});
+    }
 
 	ngOnInit() {
 		//check user logged in
@@ -294,6 +400,23 @@ export class BlogComponent implements OnInit {
 	    	//All user online
 	    	this.socketConnection = this.socketService.getResponseUsersOnline().subscribe(data => {
 	    		this.usersOnline = data;
+	    	});
+
+	    	//All messages chat
+	    	this.socketConnection = this.socketService.getResponseMessage().subscribe(data => {
+	    		this.messagesChat.push(data);
+	    		this.scrollToBottom();
+	    	});
+
+	    	//
+	    	//All messages chat
+	    	this.socketConnection = this.socketService.getResponseCallUserChat().subscribe(data => {
+	    		this.isRequestChat = true;
+	    		setTimeout(() => {
+	    			this.messageCallUserChatClass = 'alert alert-success';
+	    			this.messageCallUserChat = data;
+	    			this.isRequestChat = false;
+	    		}, 2000);
 	    	});
 
 			this.getAllBlogs();

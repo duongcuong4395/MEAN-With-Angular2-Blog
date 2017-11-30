@@ -1,13 +1,13 @@
 //blog.js
 
-const mongoose = require('mongoose');
-mongoose.Promise = global.Promise;
-const User = require('../models/user');
-var userAuth       = require('../models/userAuth');
-const Blog = require('../models/blogs');
-//compact, URL-safe means of representing claims to be transferred between two parties
-const jwt = require('jsonwebtoken');
-const config = require('../config/database');
+const mongoose       = require('mongoose');
+mongoose.Promise     = global.Promise;
+const User           = require('../models/user');
+var userAuth         = require('../models/userAuth');
+const Blog           = require('../models/blogs');
+var userHistory      = require('../models/history');
+const jwt            = require('jsonwebtoken'); //compact, URL-safe means of representing claims to be transferred between two parties
+const config         = require('../config/database');
 
 //create API (router)
 //app.use('/blogs', blogs);
@@ -28,7 +28,7 @@ module.exports = (router) => {
 					var today = new Date();
 					Blog.count({
 						'createdAt.date': today.getDate(), 
-						'createdAt.month': today.getMonth(), 
+						'createdAt.month': today.getMonth() + 1, 
 						'createdAt.year': today.getFullYear()
 					}, (err, count) => {
 						if(err) {
@@ -380,13 +380,15 @@ module.exports = (router) => {
 									} else {
 										blog.comments.push({
 											comment: req.body.comment,
-											commentator: user.userAuthorization.name
+											commentator: user.userAuthorization.username,
+											icon: req.body.icon,
+											numberIcon: req.body.numberIcon
 										});
 										blog.save((err) => {
 											if(err) {
 												res.json({success: false, message: 'comment faild: '+ err});
 											} else {
-												res.json({success: true, message: 'comment saved'});
+												res.json({success: true, message: 'comment saved', blog: blog});
 											}
 										});
 									}

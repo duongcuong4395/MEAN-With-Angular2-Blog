@@ -1,1 +1,97 @@
 <h1 class="page-header">Dashboard</h1>
+
+<div class="row show-hide-message" *ngIf="message">
+	<div [ngClass]="messageClass">
+		{{ message }}
+	</div>
+</div>
+
+<div class="row show-hide-message" *ngIf="messageWriteBlog">
+	<div [ngClass]="messageWriteBlogClass">
+		{{ messageWriteBlog }}
+	</div>
+</div>
+
+<div class="row show-hide-message" *ngIf="messageCommentBlog">
+	<div [ngClass]="messageCommentBlogClass">
+		{{ messageCommentBlog }}
+	</div>
+</div>
+
+<div class="row show-hide-message" *ngIf="messageLikeBlog">
+	<div [ngClass]="messageLikeBlogClass">
+		{{ messageLikeBlog }}
+	</div>
+</div>
+
+<div class="row show-hide-message" *ngIf="messageDislikeBlog">
+	<div [ngClass]="messageDislikeBlogClass">
+		{{ messageDislikeBlog }}
+	</div>
+</div>
+
+<div class="panel panel-primary">
+	<div class="panel-heading">History</div>
+	<div class="panel-body">
+		<div class="form-inline">
+			<div class="form-group">
+				<label for="month">Month :</label>
+				 <select class="form-control" type="number" id="month" [(ngModel)]="monthSelect" >
+			      		<option *ngFor="let mnth of month" [ngValue]="mnth">{{mnth}}</option>
+			    </select>
+			</div>
+			<div class="form-group">
+				<label for="year">Year:</label>
+				<select class="form-control" type="number" id="year" [(ngModel)]="yearSelect" >
+						<option *ngFor="let yr of year" [ngValue]="yr">{{yr}}</option>
+				</select>
+			</div>
+			<button class="btn btn-default" type="button" (click)="searchHistory()">Go!</button>
+		</div>
+
+		<div class="clearfix"></div>
+		<label for="userlogin">Login :</label>
+		<div class="progress">
+			<div class="progress-bar progress-bar-striped progress-bar-animated" [style.width]="getWidthUserLogin()">
+				<div>{{numberUserOnlineInMonth}}%</div>
+			</div>	
+		</div>
+
+		<div class="clearfix"></div>
+		<label for="userwriteblog">Write blog :</label>
+		<div class="progress">
+			<div class="progress-bar progress-bar-striped progress-bar-animated" [style.width]="getWidthUserWriteBlog()">
+				<div>{{numberUserWriteBlogInMonth}}%</div>
+			</div>	
+		</div>
+
+		
+		<div class="clearfix"></div>
+		<label for="userwriteblog">Comment blog :</label>
+		<div class="progress">
+			<div class="progress-bar progress-bar-striped progress-bar-animated" [style.width]="getWidthUserCommentBlog()">
+				<div>{{numberUserCommentBlogInMonth}}%</div>
+			</div>	
+		</div>
+
+		
+		<div class="clearfix"></div>
+		<label for="userwriteblog">Like blog :</label>
+		<div class="progress">
+			<div class="progress-bar progress-bar-striped progress-bar-animated" [style.width]="getWidthUserLikeBlog()">
+				<div>{{numberUserLikeBlogInMonth}}%</div>
+			</div>	
+		</div>
+
+		<div class="clearfix"></div>
+		<label for="userwriteblog">Dislike blog :</label>
+		<div class="progress">
+			<div class="progress-bar progress-bar-striped progress-bar-animated" [style.width]="getWidthUserDislikeBlog()">
+				<div>{{numberUserDislikeBlogInMonth}}%</div>
+			</div>	
+		</div>
+	</div>
+</div>
+
+
+

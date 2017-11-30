@@ -44,3 +44,12 @@
 .dropdown:hover .dropbtn {
     background-color: #3e8e41;
 }
+
+.sent-chat {
+    float: right !important;
+  }
+
+  .received-chat {
+    float: left !important;
+  }
+

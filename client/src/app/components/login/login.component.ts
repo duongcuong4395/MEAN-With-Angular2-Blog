@@ -100,6 +100,10 @@ export class LoginComponent implements OnInit {
 			} else {
 				this.messageClass = 'alert alert-success'; 
 				this.message = data.message;
+
+				this.authService.updateHistoryLogin(this.username).subscribe(data => {
+					//dosomething
+				});
 				//store user's token in client local storage
 				this.authService.storeUserData(data.token, data.user);
 				this.socketService.sendRequestCreateUser(this.username);

@@ -1,14 +1,13 @@
-const mongoose = require('mongoose');
-mongoose.Promise = global.Promise;
-const User = require('../models/user');
-var userAuth       = require('../models/userAuth');
-
-const jwt = require('jsonwebtoken');
-const config = require('../config/database');
-
-const hbs = require('nodemailer-express-handlebars');
-const nodemailer = require('nodemailer');
-const xoauth2 = require('xoauth2');
+const mongoose       = require('mongoose');
+mongoose.Promise     = global.Promise;
+const User           = require('../models/user');
+var userAuth         = require('../models/userAuth');
+var userHistory      = require('../models/history');
+const jwt            = require('jsonwebtoken');
+const config         = require('../config/database');
+const hbs            = require('nodemailer-express-handlebars');
+const nodemailer     = require('nodemailer');
+const xoauth2        = require('xoauth2');
 
 
 
@@ -324,6 +323,355 @@ module.exports = (router) => {
 			}
 		}
 	});
+
+	router.get('/getUserHistoryDislikeBlogInMonth/:username/:month/:year', (req, res) => {
+		if(!req.params.username) {
+			res.json({success: false, message: 'username was not provided!'});
+		} else {
+			if(!req.params.month) {
+				res.json({success: false, message: 'month was not provided!'});
+			} else {
+				if(!req.params.year) {
+					res.json({success: false, message: 'year was not provided!'});
+				} else {
+					userHistory.findOne({'usernameOnline': req.params.username, 'historyType': 'LikeOrDislike', 'dateUserOnline.month': req.params.month, 'dateUserOnline.year': req.params.year}, (err, uHDL) => {
+						if(err) {
+							res.json({success: false, message: err});
+						} else {
+							if(!uHDL) {
+								res.json({success: false, message: 'You have not dislike blog yet this month'});
+							} else {
+								res.json({success: true, userHDL: uHDL});
+							}
+						}
+					});
+				}
+			}
+		}
+	});
+
+	router.post('/updateUserHistoryDislikeBlogInMonth/:username', (req, res) => {
+		if(!req.params.username) {
+			res.json({success: false, message: 'Username was not provided!'});
+		} else {
+			var today = new Date();
+			//update history of user login
+			userHistory.findOne({'usernameOnline': req.params.username, 'historyType': 'LikeOrDislike' ,'dateUserOnline.month': today.getMonth() + 1, 'dateUserOnline.year': today.getFullYear()}, (err, uHDL) => {
+				//check err
+				if(err) {
+					res.json({success: false, message: err});
+				} else {
+					//check not found record user history
+					if(!uHDL){
+						const userHisDislikeBlog = new userHistory();
+						userHisDislikeBlog.historyType = 'LikeOrDislike';
+						userHisDislikeBlog.usernameOnline = req.params.username;
+						userHisDislikeBlog.dateUserOnline.date = today.getDate();
+						userHisDislikeBlog.dateUserOnline.month = today.getMonth() + 1;
+						userHisDislikeBlog.dateUserOnline.year = today.getFullYear();
+						userHisDislikeBlog.numberUserLikeOrDislike.numberUserDislikeBlogInMonth = 1;
+						userHisDislikeBlog.save((err) => {
+							if(err) {
+								res.json({success: false, message: err});
+							} else {
+								res.json({success: true, message: 'Add user history success'});
+							}
+						});
+					} else {
+						if(uHDL.numberUserLikeOrDislike.numberUserLikeBlogInMonth > 0) {
+							uHDL.numberUserLikeOrDislike.numberUserLikeBlogInMonth = uHDL.numberUserLikeOrDislike.numberUserLikeBlogInMonth - 1;
+						}
+						uHDL.numberUserLikeOrDislike.numberUserDislikeBlogInMonth = uHDL.numberUserLikeOrDislike.numberUserDislikeBlogInMonth + 1;
+						uHDL.save((err) =>{
+							if(err) {
+								res.json({success: false, message: err});
+							} else {
+								res.json({success: true, message: 'Add user history success'});
+							}
+						});
+					}
+				}
+			});
+		}
+	});
+
+	router.get('/getUserHistoryLikeBlogInMonth/:username/:month/:year', (req, res) => {
+		if(!req.params.username) {
+			res.json({success: false, message: 'username was not provided!'});
+		} else {
+			if(!req.params.month) {
+				res.json({success: false, message: 'month was not provided!'});
+			} else {
+				if(!req.params.year) {
+					res.json({success: false, message: 'year was not provided!'});
+				} else {
+					userHistory.findOne({'usernameOnline': req.params.username, 'historyType': 'LikeOrDislike', 'dateUserOnline.month': req.params.month, 'dateUserOnline.year': req.params.year}, (err, uHL) => {
+						if(err) {
+							res.json({success: false, message: err});
+						} else {
+							if(!uHL) {
+								res.json({success: false, message: 'You have not like blog yet this month'});
+							} else {
+								res.json({success: true, userHL: uHL});
+							}
+						}
+					});
+				}
+			}
+		}
+	});
+
+	router.post('/updateUserHistoryLikeBlogInMonth/:username', (req, res) => {
+		if(!req.params.username) {
+			res.json({success: false, message: 'Username was not provided!'});
+		} else {
+			var today = new Date();
+			//update history of user login
+			userHistory.findOne({'usernameOnline': req.params.username, 'historyType': 'LikeOrDislike' ,'dateUserOnline.month': today.getMonth() + 1, 'dateUserOnline.year': today.getFullYear()}, (err, uHL) => {
+				//check err
+				if(err) {
+					res.json({success: false, message: err});
+				} else {
+					//check not found record user history
+					if(!uHL){
+						const userHisLikeBlog = new userHistory();
+						userHisLikeBlog.historyType = 'LikeOrDislike';
+						userHisLikeBlog.usernameOnline = req.params.username;
+						userHisLikeBlog.dateUserOnline.date = today.getDate();
+						userHisLikeBlog.dateUserOnline.month = today.getMonth() + 1;
+						userHisLikeBlog.dateUserOnline.year = today.getFullYear();
+						userHisLikeBlog.numberUserLikeOrDislike.numberUserLikeBlogInMonth = 1;
+						userHisLikeBlog.save((err) => {
+							if(err) {
+								res.json({success: false, message: err});
+							} else {
+								res.json({success: true, message: 'Add user history success'});
+							}
+						});
+					} else {
+						if(uHL.numberUserLikeOrDislike.numberUserDislikeBlogInMonth > 0) {
+							uHL.numberUserLikeOrDislike.numberUserDislikeBlogInMonth = uHL.numberUserLikeOrDislike.numberUserDislikeBlogInMonth - 1;
+						}
+						uHL.numberUserLikeOrDislike.numberUserLikeBlogInMonth = uHL.numberUserLikeOrDislike.numberUserLikeBlogInMonth + 1;
+						uHL.save((err) =>{
+							if(err) {
+								res.json({success: false, message: err});
+							} else {
+								res.json({success: true, message: 'Add user history success'});
+							}
+						});
+					}
+				}
+			});
+		}
+	});
+
+	router.get('/getUserHistoryCommentBlogInMonth/:username/:month/:year', (req, res) => {
+		if(!req.params.username) {
+			res.json({success: false, message: 'username was not provided!'});
+		} else {
+			if(!req.params.month) {
+				res.json({success: false, message: 'month was not provided!'});
+			} else {
+				if(!req.params.year) {
+					res.json({success: false, message: 'year was not provided!'});
+				} else {
+					userHistory.findOne({'usernameOnline': req.params.username, 'historyType': 'CommentBlog', 'dateUserOnline.month': req.params.month, 'dateUserOnline.year': req.params.year}, (err, uHC) => {
+						if(err) {
+							res.json({success: false, message: err});
+						} else {
+							if(!uHC) {
+								res.json({success: false, message: 'You have not comment blog yet this month'});
+							} else {
+								res.json({success: true, userHC: uHC});
+							}
+						}
+					});
+				}
+			}
+		}
+	});
+
+	router.post('/updateUserHistoryCommentBlogInMonth/:username', (req, res) => {
+		if(!req.params.username) {
+			res.json({success: false, message: 'Username was not provided!'});
+		} else {
+			var today = new Date();
+			//update history of user login
+			userHistory.findOne({'usernameOnline': req.params.username, 'historyType': 'CommentBlog' ,'dateUserOnline.month': today.getMonth() + 1, 'dateUserOnline.year': today.getFullYear()}, (err, uHC) => {
+				//check err
+				if(err) {
+					res.json({success: false, message: err});
+				} else {
+					//check not found record user history
+					if(!uHC){
+						
+						const userHisCommentBlog = new userHistory();
+						userHisCommentBlog.historyType = 'CommentBlog';
+						userHisCommentBlog.usernameOnline = req.params.username;
+						userHisCommentBlog.dateUserOnline.date = today.getDate();
+						userHisCommentBlog.dateUserOnline.month = today.getMonth() + 1;
+						userHisCommentBlog.dateUserOnline.year = today.getFullYear();
+						userHisCommentBlog.numberUserCommentBlogInMonth = 1;
+						userHisCommentBlog.save((err) => {
+							if(err) {
+								res.json({success: false, message: err});
+							} else {
+								res.json({success: true, message: 'Add user history success'});
+							}
+						});
+					} else {
+						uHC.numberUserCommentBlogInMonth = uHC.numberUserCommentBlogInMonth + 1;
+						uHC.save((err) =>{
+							if(err) {
+								res.json({success: false, message: err});
+							} else {
+								res.json({success: true, message: 'Add user history success'});
+							}
+						});
+					}
+				}
+			});
+		}
+	});
+
+	router.get('/getUserUserHistoryWriteBlogInMonth/:username/:month/:year', (req, res) => {
+		if(!req.params.username) {
+			res.json({success: false, message: 'username was not provided!'});
+		} else {
+			if(!req.params.month) {
+				res.json({success: false, message: 'month was not provided!'});
+			} else {
+				if(!req.params.year) {
+					res.json({success: false, message: 'year was not provided!'});
+				} else {
+					userHistory.findOne({'usernameOnline': req.params.username, 'historyType': 'WriteBlog', 'dateUserOnline.month': req.params.month, 'dateUserOnline.year': req.params.year}, (err, uHL) => {
+						if(err) {
+							res.json({success: false, message: err});
+						} else {
+							if(!uHL) {
+								res.json({success: false, message: 'You have not blogged yet this month'});
+							} else {
+								res.json({success: true, userHL: uHL});
+							}
+						}
+					});
+				}
+			}
+		}
+	});
+
+	router.post('/updateUserHistoryWriteBlogInMonth/:username', (req, res) => {
+		if(!req.params.username) {
+			res.json({success: false, message: 'Username was not provided!'});
+		} else {
+			var today = new Date();
+			//update history of user login
+			userHistory.findOne({'usernameOnline': req.params.username, 'historyType': 'WriteBlog' ,'dateUserOnline.month': today.getMonth() + 1, 'dateUserOnline.year': today.getFullYear()}, (err, uHL) => {
+				//check err
+				if(err) {
+					res.json({success: false, message: err});
+				} else {
+					//check not found record user history
+					if(!uHL){
+						const userHisWriteBlog = new userHistory();
+						userHisWriteBlog.historyType = 'WriteBlog';
+						userHisWriteBlog.usernameOnline = req.params.username;
+						userHisWriteBlog.dateUserOnline.date = today.getDate();
+						userHisWriteBlog.dateUserOnline.month = today.getMonth() + 1;
+						userHisWriteBlog.dateUserOnline.year = today.getFullYear();
+						userHisWriteBlog.numberUserWriteBlogInMonth = 1;
+						userHisWriteBlog.save((err) => {
+							if(err) {
+								res.json({success: false, message: err});
+							} else {
+								res.json({success: true, message: 'Add user history success'});
+							}
+						});
+					} else {
+						uHL.numberUserWriteBlogInMonth = uHL.numberUserWriteBlogInMonth + 1;
+						uHL.save((err) =>{
+							if(err) {
+								res.json({success: false, message: err});
+							} else {
+								res.json({success: true, message: 'Add user history success'});
+							}
+						});
+					}
+				}
+			});
+		}
+	});
+
+	router.get('/getUserUserHistoryLoginInMonth/:username/:month/:year', (req, res) => {
+		if(!req.params.username) {
+			res.json({success: false, message: 'username was not provided!'});
+		} else {
+			if(!req.params.month) {
+				res.json({success: false, message: 'month was not provided!'});
+			} else {
+				if(!req.params.year) {
+					res.json({success: false, message: 'year was not provided!'});
+				} else {
+					userHistory.findOne({'usernameOnline': req.params.username, 'historyType': 'Login', 'dateUserOnline.month': req.params.month, 'dateUserOnline.year': req.params.year}, (err, uHL) => {
+						if(err) {
+							res.json({success: false, message: err});
+						} else {
+							if(!uHL) {
+								res.json({success: false, message: 'This month you not login'});
+							} else {
+								res.json({success: true, userHL: uHL});
+							}
+						}
+					});
+				}
+			}
+		}
+	});
+
+	router.post('/updateUserHistoryLoginInMonth/:username', (req, res) => {
+		if(!req.params.username) {
+			res.json({success: false, message: 'Username was not provided!'});
+		} else {
+			var today = new Date();
+			//update history of user login
+			userHistory.findOne({'usernameOnline': req.params.username, 'historyType': 'Login' ,'dateUserOnline.month': today.getMonth() + 1, 'dateUserOnline.year': today.getFullYear()}, (err, uHL) => {
+				//check err
+				if(err) {
+					res.json({success: false, message: err});
+				} else {
+					//check not found record user history
+					if(!uHL){
+						const userHisLogin = new userHistory();
+						userHisLogin.historyType = 'Login';
+						userHisLogin.usernameOnline = req.params.username;
+						userHisLogin.dateUserOnline.date = today.getDate();
+						userHisLogin.dateUserOnline.month = today.getMonth() + 1;
+						userHisLogin.dateUserOnline.year = today.getFullYear();
+						userHisLogin.numberUserLoginInMonth = 1;
+						userHisLogin.save((err) => {
+							if(err) {
+								res.json({success: false, message: err});
+							} else {
+								res.json({success: true, message: 'Add user history success'});
+							}
+						});
+					} else {
+						uHL.numberUserLoginInMonth = uHL.numberUserLoginInMonth + 1;
+						uHL.save((err) =>{
+							if(err) {
+								res.json({success: false, message: err});
+							} else {
+								res.json({success: true, message: 'Add user history success'});
+							}
+						});
+					}
+				}
+			});
+		}
+	});
+
+	
 
 	//profileWithID
 	//router api profile With ID of user 

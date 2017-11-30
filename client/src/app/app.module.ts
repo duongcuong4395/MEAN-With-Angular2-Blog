@@ -6,6 +6,7 @@ import { HttpModule } from '@angular/http';
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { AppRoutingModule } from './app-routing.module';
 import {ScrollToModule} from 'ng2-scroll-to'; //angular 2 library to animate scrolling to anchor links.
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
@@ -28,13 +29,7 @@ import { SocketService } from './services/socket.service';
 
 import { AuthGuard } from './guards/auth.guard';
 import { NotAuthGuard } from './guards/notAuth.guard';
-
-
-
-
-
-
-
+import { PopoverModule } from 'ng2-popover';
 
 @NgModule({
   declarations: [
@@ -60,6 +55,8 @@ import { NotAuthGuard } from './guards/notAuth.guard';
     HttpModule,
     AppRoutingModule,
     FlashMessagesModule,
+    PopoverModule,
+    BrowserAnimationsModule,
     ScrollToModule.forRoot()
   ],
   providers: [AuthService, BlogService, SocketService, AuthGuard, NotAuthGuard],

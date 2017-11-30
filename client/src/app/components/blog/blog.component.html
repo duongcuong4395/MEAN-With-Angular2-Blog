@@ -1,7 +1,7 @@
 <style type="text/css">
 	.imageprofile{
-		height: 50px;
-		width: 50px;
+		height: 40px;
+		width: 40px;
 	}
 	.title {
 		font-weight: bold;
@@ -29,6 +29,12 @@
 </style>
 
 <h1 class="page-header">Blog</h1>
+
+<div class="row show-hide-message" *ngIf="message">
+	<div [ngClass]="messageClass">
+		{{ message }}
+	</div>
+</div>
 
 <div class="container">
 	<div class="row">
@@ -96,12 +102,12 @@
 					<div class="panel-heading">
 						<div class="pull-left">
 							<h3 class="panel-title title" id="{{blog.title}}">  
-						 		<img src="{{blog.avatarPost}}" class="imageprofile img-thumbnail img-responsive img-circle" alt="image profile"> 
+						 		<img src="{{blog.avatarPost}}" class="imageprofile img-thumbnail img-responsive img-circle" alt="image profile" [routerLink]="['/user/', blog.createdBy]" style="cursor: pointer;"> 
 						 		{{ blog.createdBy }}: {{ blog.title }}
 						 	</h3>
 						</div>
 						<div class="pull-right">
-							<span class="glyphicon glyphicon-chevron-down dropdown" style="cursor: pointer;" *ngIf="username === blog.createdBy">
+							<div class="glyphicon glyphicon-chevron-down dropdown" style="cursor: pointer;" *ngIf="username === blog.createdBy">
 								<div class="dropdown-content">
 									<a [routerLink]="['/edit-blog/', blog._id]">
 										<button type="button" name="button" class="btn btn-sm btn-info">Edit</button>
@@ -110,7 +116,7 @@
 										<button type="button" name="button" class="btn btn-sm btn-danger">Delete</button>
 									</a>
 								</div>
-							</span>
+							</div>
 						</div>
 					</div>
 					<div class="clearfix"></div>
@@ -143,7 +149,7 @@
 
 						<div>
 							<button type="button" name="button" class="btn btn-sm btn-danger" (click)="draftComment(blog._id)" [disabled]="newComment.indexOf(blog._id) > -1">
-							  <span class="glyphicon glyphicon-edit">&nbsp;</span> Comment
+							  <span class="glyphicon glyphicon-comment">&nbsp;</span>{{blog.comments.length}} Comment
 							</button>
 						</div>
 
@@ -154,7 +160,7 @@
 							
 							<div *ngIf="newComment.indexOf(blog._id) > -1"> 
 								<form [formGroup]="commentForm">
-									<textarea name="comment" row="8" cols="30" class="form-control" formControlName="comment"></textarea>
+									<textarea name="comment" row="8" cols="30" class="form-control" formControlName="comment" (keydown.esc)="cancelSubmission(blog._id)"></textarea>
 									<div [ngClass]="{'has-success': !commentForm.controls.comment.errors && commentForm.controls.comment.dirty, 'has-error': commentForm.controls.comment.dirty && commentForm.controls.comment.errors}">
 										<ul class="help-block">
 											<li *ngIf="commentForm.controls.comment.errors?.required && commentForm.controls.comment.dirty">
@@ -165,6 +171,303 @@
 											</li>
 										</ul>
 									</div>
+									<div>
+										<popover-content #myPopover title="Icon chat." placement="right" [closeOnClickOutside]="true" [animation]="true">
+										  	<div>
+										  		<div class="row">
+													<div class="col-md-1" (click)="showIcons(1)">
+														<img src="./assets/images/icons/icon1/Smileyface.png">
+													</div>
+													<div class="col-md-1" (click)="showIcons(2)">
+														<img src="./assets/images/icons/icon2/Piggy.png">
+													</div>
+													<div class="col-md-1" (click)="showIcons(3)">
+														<img src="./assets/images/icons/icon3/Smiling.png">
+													</div>
+												</div>
+										  		<div *ngIf="icons1">
+												    <button (click)="sendIcon('Angel', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Angel.png">
+												    </button>
+												    <button (click)="sendIcon('Angry', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Angry.png">
+												    </button>
+												    <button (click)="sendIcon('Bigsmile', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Bigsmile.png">
+												    </button>
+												    <button (click)="sendIcon('Cheerful', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Cheerful.png">
+												    </button>
+												    <button (click)="sendIcon('Confused', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Confused.png">
+												    </button>
+												    <button (click)="sendIcon('Crying', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Crying.png">
+												    </button>
+												    <button (click)="sendIcon('Curlylips', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Curlylips.png">
+												    </button>
+												    <button (click)="sendIcon('Evil', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Evil.png">
+												    </button>
+												    <button (click)="sendIcon('Frown', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Frown.png">
+												    </button>
+												    <button (click)="sendIcon('Glasses', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Glasses.png">
+												    </button>
+												    <button (click)="sendIcon('Grumpy', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Grumpy.png">
+												    </button>
+												    <button (click)="sendIcon('Kiss', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Kiss.png">
+												    </button>
+												    <button (click)="sendIcon('Mean', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Mean.png">
+												    </button>
+												    <button (click)="sendIcon('Pacman', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Pacman.png">
+												    </button>
+												    <button (click)="sendIcon('Poop', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Poop.png">
+												    </button>
+												    <button (click)="sendIcon('Smileyface', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Smileyface.png">
+												    </button>
+												    <button (click)="sendIcon('Squint', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Squint.png">
+												    </button>
+												    <button (click)="sendIcon('Sunglasses', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Sunglasses.png">
+												    </button>
+												    <button (click)="sendIcon('Surprised', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Surprised.png">
+												    </button>
+												    <button (click)="sendIcon('Thumbup', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Thumbup.png">
+												    </button>
+												    <button (click)="sendIcon('Tongueout', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Tongueout.png">
+												    </button>
+												    <button (click)="sendIcon('Unsure', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Unsure.png">
+												    </button>
+												    <button (click)="sendIcon('Wink', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon1/Wink.png">
+												    </button>
+												    <button (click)="sendIcon('x', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+											        	<span class="glyphicon glyphicon-remove-circle"></span>
+												    </button>
+											    </div>
+											    <div *ngIf="icons2">
+											    	<button (click)="sendIcon('Blowfish', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Blowfish.png">
+												    </button>
+												    <button (click)="sendIcon('Bluebird', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Bluebird.png">
+												    </button>
+												    <button (click)="sendIcon('Bunny', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Bunny.png">
+												    </button>
+												    <button (click)="sendIcon('Camel', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Camel.png">
+												    </button>
+												    <button (click)="sendIcon('Cat', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Cat.png">
+												    </button>
+												    <button (click)="sendIcon('Chicken', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Chicken.png">
+												    </button>
+												    <button (click)="sendIcon('Cow', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Cow.png">
+												    </button>
+												    <button (click)="sendIcon('Dolphin', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Dolphin.png">
+												    </button>
+												    <button (click)="sendIcon('Elephant', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Elephant.png">
+												    </button>
+												    <button (click)="sendIcon('Fish', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Fish.png">
+												    </button>
+												    <button (click)="sendIcon('Frog', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Frog.png">
+												    </button>
+												    <button (click)="sendIcon('Hamster', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Hamster.png">
+												    </button>
+												    <button (click)="sendIcon('Horse', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Horse.png">
+												    </button>
+												    <button (click)="sendIcon('Horseface', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Horseface.png">
+												    </button>
+												    <button (click)="sendIcon('Koala', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Koala.png">
+												    </button>
+												    <button (click)="sendIcon('Monkey', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Monkey.png">
+												    </button>
+												    <button (click)="sendIcon('Monkeyface', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Monkeyface.png">
+												    </button>
+												    <button (click)="sendIcon('Mouse', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Mouse.png">
+												    </button>
+												    <button (click)="sendIcon('Octopus', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Octopus.png">
+												    </button>
+												    <button (click)="sendIcon('Penguin', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Penguin.png">
+												    </button>
+												    <button (click)="sendIcon('Piggy', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Piggy.png">
+												    </button>
+												    <button (click)="sendIcon('Poodle', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Poodle.png">
+												    </button>
+												    <button (click)="sendIcon('Puppy', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Puppy.png">
+												    </button>
+												    <button (click)="sendIcon('Sheep', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Sheep.png">
+												    </button>
+												    <button (click)="sendIcon('Snail', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Snail.png">
+												    </button>
+												    <button (click)="sendIcon('Snake', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Snake.png">
+												    </button>
+												    <button (click)="sendIcon('Teddy', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Teddy.png">
+												    </button>
+												    <button (click)="sendIcon('Tiger', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Tiger.png">
+												    </button>
+												    <button (click)="sendIcon('Tropicalfish', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/tropicalfish.png">
+												    </button>
+												    <button (click)="sendIcon('Whale', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Whale.png">
+												    </button>
+												    <button (click)="sendIcon('Wildboar', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Wildboar.png">
+												    </button>
+												    <button (click)="sendIcon('Wolf', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Wolf.png">
+												    </button>
+												    <button (click)="sendIcon('Yellowchick', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon2/Yellowchick.png">
+												    </button>
+												    <button (click)="sendIcon('x', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+											        	<span class="glyphicon glyphicon-remove-circle"></span>
+												    </button>
+											    </div>
+											    <div *ngIf="icons3">
+											    	<button (click)="sendIcon('Alien', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Alien.png">
+												    </button>
+												    <button (click)="sendIcon('Angry', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Angry.png">
+												    </button>
+												    <button (click)="sendIcon('Astonished', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Astonished.png">
+												    </button>
+												    <button (click)="sendIcon('Biggrin', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Biggrin.png">
+												    </button>
+												    <button (click)="sendIcon('Bigsmile', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Bigsmile.png">
+												    </button>
+												    <button (click)="sendIcon('Blushing', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Blushing.png">
+												    </button>
+												    <button (click)="sendIcon('Coldsweat', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Coldsweat.png">
+												    </button>
+												    <button (click)="sendIcon('Crying', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Crying.png">
+												    </button>
+												    <button (click)="sendIcon('Devilish', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Devilish.png">
+												    </button>
+												    <button (click)="sendIcon('Disappointed', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Disappointed.png">
+												    </button>
+												    <button (click)="sendIcon('Dizzy', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Dizzy.png">
+												    </button>
+												    <button (click)="sendIcon('Fearful', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Fearful.png">
+												    </button>
+												    <button (click)="sendIcon('Inlove', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Inlove.png">
+												    </button>
+												    <button (click)="sendIcon('Kiss', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Kiss.png">
+												    </button>
+												    <button (click)="sendIcon('Kissing', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Kissing.png">
+												    </button>
+												    <button (click)="sendIcon('Mad', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Mad.png">
+												    </button>
+												    <button (click)="sendIcon('Medic', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Medic.png">
+												    </button>
+												    <button (click)="sendIcon('Relieved', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Relieved.png">
+												    </button>
+												    <button (click)="sendIcon('Sadface', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Sadface.png">
+												    </button>
+												    <button (click)="sendIcon('Satisfied', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Satisfied.png">
+												    </button>
+												    <button (click)="sendIcon('Scared', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Scared.png">
+												    </button>
+												    <button (click)="sendIcon('Screaming', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Screaming.png">
+												    </button>
+												    <button (click)="sendIcon('Shocked', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Shocked.png">
+												    </button>
+												    <button (click)="sendIcon('Sleepy', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Sleepy.png">
+												    </button>
+												    <button (click)="sendIcon('Smiling', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Smiling.png">
+												    </button>
+												    <button (click)="sendIcon('Smirking', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Smirking.png">
+												    </button>
+												    <button (click)="sendIcon('Tears', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Tears.png">
+												    </button>
+												    <button (click)="sendIcon('Tearsofjoy', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Tearsofjoy.png">
+												    </button>
+												    <button (click)="sendIcon('Tongueout', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Tongueout.png">
+												    </button>
+												    <button (click)="sendIcon('Tonguewink', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Tonguewink.png">
+												    </button>
+												    <button (click)="sendIcon('Unamused', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Unamused.png">
+												    </button>
+												    <button (click)="sendIcon('Winking', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<img src="./assets/images/icons/icon3/Winking.png">
+												    </button>
+												    <button (click)="sendIcon('x', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+											        	<span class="glyphicon glyphicon-remove-circle"></span>
+												    </button>
+											    </div>
+										    </div>
+										</popover-content>
+										<button class="btn" [popover]="myPopover" popoverPlacement="top"><img src="./assets/images/icons/icon1/Smileyface.png"></button>
+									</div>
 									<button type="submit" [disabled]="!commentForm.valid || processing" (click)="postComment(blog._id)" class="btn btn-sm btn-info">
 										Send comment
 									</button>
@@ -173,21 +476,19 @@
 									</button>
 								</form>
 							</div>
-							<li *ngIf="enabledComments.indexOf(blog._id) === -1 && blog.comments.length > 0" class="list-group-item">
-								<span (click)="expand(blog._id)">
-									Show comments
-									<div class="glyphicon glyphicon-comment"></div>
-								</span>
-							</li>
-							<li *ngIf="enabledComments.indexOf(blog._id) > -1">
-								<span (click)="collapse(blog._id)">
-									Hide comments
-									<div class="glyphicon glyphicon-comment"></div>
-								</span>
-							</li>
+							<div *ngIf="enabledComments.indexOf(blog._id) === -1 && blog.comments.length > 0" class="list-group-item">
+								<div (click)="expand(blog._id)" style="cursor: pointer;">
+									<div class="glyphicon glyphicon-comment"></div><p> Show comments</p>
+								</div>
+							</div>
+							<div *ngIf="enabledComments.indexOf(blog._id) > -1">
+								<div (click)="collapse(blog._id)" style="cursor: pointer;">
+									<div class="glyphicon glyphicon-comment"></div><p> Hide comments</p>
+								</div>
+							</div>
 							<div *ngIf="enabledComments.indexOf(blog._id) > -1">
 								<div *ngFor="let comment of blog.comments" class="list-group-item">
-									<strong>{{ comment.commentator }} : </strong> {{ comment.comment }}
+									<strong>{{ comment.commentator }} : </strong> {{ comment.comment }} <img src="/assets/images/icons/{{comment.numberIcon}}/{{comment.icon}}.png">
 								</div>
 							</div>
 						</div>
@@ -200,34 +501,370 @@
 			<div style="position: fixed; width: 25%; top: 55px;">
 				<!-- ALL HISTORY ACTIVE -->
 				<div class="userActive">
-					<p><strong>Active</strong></p>
+					<p><strong style="cursor: pointer;" (click)="loadAll()">Active</strong></p>
 					<hr>
 					<div *ngFor="let active of allActive">
 						<p>
-							<a [routerLink]="['/user/', active.username]">
-								<img src="{{active.photo}}" class="imageprofile img-thumbnail img-responsive img-circle">
-								<strong style="color: blue;"> {{active.username}}: </strong>
-							</a>
-						 	{{active.userActive}} 
-						 	<a scrollTo href="#{{active.blog}}"> {{active.blog}} </a>
+							<strong [routerLink]="['/user/', active.username]" style="color: blue; cursor: pointer;">
+								<img src="{{active.photo}}" class="imageprofile img-thumbnail img-responsive img-circle"> {{active.username}}:
+							</strong> {{active.userActive}}  <a scrollTo href="#{{active.blog}}"> {{active.blog}} </a>
 						</p>
 						<hr>
 					</div>
 				</div>
 				<!-- ALL USER ONLINE -->
 				<div class="userOnline userActive">
-					<p><strong>Online</strong></p>
+					<br>
+					<div class="row show-hide-message" *ngIf="isRequestChat">
+						<div [ngClass]="messageCallUserChatClass">
+							{{messageCallUserChat?.userSendRequest}} {{messageCallUserChat?.message}}
+						</div>
+					</div>
+					<br>
+					<p><strong style="cursor: pointer;" (click)="loadAll()">Online</strong> <strong class="pull-right" data-toggle="modal" data-target=".bs-example-modal-sm" style="color: blue; cursor: pointer;">Chat</strong></p>
 					<hr>
 					<div *ngFor="let user of usersOnline">
-						<p>
-							<a [routerLink]="['/user/', user.username]" >
+						<!-- [routerLink]="['/user/', user.username]" -->
+						<div *ngIf="user.username != username" (click)="callUserChat(user.username)">
+							<p style="cursor: pointer;">
 								<img src="{{user.photo}}" class="imageprofile img-thumbnail img-responsive img-circle">
 								{{user.username}} <img src="./assets/images/Status-user-online-icon.png" class="pull-right">
-							</a>
-						</p>
+							</p>
+						</div>
 						<hr>
 					</div>
 				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+	<div class="modal-dialog modal-sm" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Chat</h4>
+			</div>
+			<div class="modal-body">
+				<!-- div chat -->
+				<div class="userActive" #scrollMe >
+					<div *ngFor="let message of messagesChat" class="alert" [ngClass]="(username==message.username)? 'sent-chat alert-info':'received-chat alert-warning'">
+						<div >
+							<span class="badge" *ngIf="username!=message.username"> <img src="{{message.photo}}" class="imageprofile img-thumbnail img-responsive img-circle" onError="this.src='./assets/images/happy.png';"  alt="..."> {{message.username}}</span> {{message.message}} <p *ngIf="message.icon"> <img src="/assets/images/icons/{{message.numberIcon}}/{{message.icon}}.png"> </p>
+							
+
+							<p *ngIf="message.icon == 'x'"> </p>
+							<p *ngIf="!message.icon"> </p>
+						</div>
+					</div>
+				</div>
+				<div class="clearfix"></div>
+				<div class="input-group">
+					<span class="input-group-addon" id="basic-addon1">Message: </span>
+					<input type="text" [(ngModel)]="messageChat" class="form-control" placeholder="Recipient's username" aria-describedby="basic-addon2" (keydown.enter)="sendMessage();false;">
+				</div>
+				<div>
+					<popover-content #myPopover title="Icon chat." placement="right" [closeOnClickOutside]="true" [animation]="true">
+					  	<!-- button send icon -->
+					  	<div>
+					  		<div class="row">
+								<div class="col-md-1" (click)="showIcons(1)">
+									<img src="./assets/images/icons/icon1/Smileyface.png">
+								</div>
+								<div class="col-md-1" (click)="showIcons(2)">
+									<img src="./assets/images/icons/icon2/Piggy.png">
+								</div>
+								<div class="col-md-1" (click)="showIcons(3)">
+									<img src="./assets/images/icons/icon3/Smiling.png">
+								</div>
+							</div>
+					  		<div *ngIf="icons1">
+							    <button (click)="sendIcon('Angel', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Angel.png">
+							    </button>
+							    <button (click)="sendIcon('Angry', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Angry.png">
+							    </button>
+							    <button (click)="sendIcon('Bigsmile', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Bigsmile.png">
+							    </button>
+							    <button (click)="sendIcon('Cheerful', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Cheerful.png">
+							    </button>
+							    <button (click)="sendIcon('Confused', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Confused.png">
+							    </button>
+							    <button (click)="sendIcon('Crying', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Crying.png">
+							    </button>
+							    <button (click)="sendIcon('Curlylips', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Curlylips.png">
+							    </button>
+							    <button (click)="sendIcon('Evil', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Evil.png">
+							    </button>
+							    <button (click)="sendIcon('Frown', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Frown.png">
+							    </button>
+							    <button (click)="sendIcon('Glasses', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Glasses.png">
+							    </button>
+							    <button (click)="sendIcon('Grumpy', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Grumpy.png">
+							    </button>
+							    <button (click)="sendIcon('Kiss', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Kiss.png">
+							    </button>
+							    <button (click)="sendIcon('Mean', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Mean.png">
+							    </button>
+							    <button (click)="sendIcon('Pacman', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Pacman.png">
+							    </button>
+							    <button (click)="sendIcon('Poop', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Poop.png">
+							    </button>
+							    <button (click)="sendIcon('Smileyface', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Smileyface.png">
+							    </button>
+							    <button (click)="sendIcon('Squint', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Squint.png">
+							    </button>
+							    <button (click)="sendIcon('Sunglasses', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Sunglasses.png">
+							    </button>
+							    <button (click)="sendIcon('Surprised', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Surprised.png">
+							    </button>
+							    <button (click)="sendIcon('Thumbup', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Thumbup.png">
+							    </button>
+							    <button (click)="sendIcon('Tongueout', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Tongueout.png">
+							    </button>
+							    <button (click)="sendIcon('Unsure', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Unsure.png">
+							    </button>
+							    <button (click)="sendIcon('Wink', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon1/Wink.png">
+							    </button>
+							    <button (click)="sendIcon('x', 'icon1')" class="btn btn-default" style="margin-left:auto; ">
+						        	<span class="glyphicon glyphicon-remove-circle"></span>
+							    </button>
+						    </div>
+						    <div *ngIf="icons2">
+						    	<button (click)="sendIcon('Blowfish', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Blowfish.png">
+							    </button>
+							    <button (click)="sendIcon('Bluebird', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Bluebird.png">
+							    </button>
+							    <button (click)="sendIcon('Bunny', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Bunny.png">
+							    </button>
+							    <button (click)="sendIcon('Camel', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Camel.png">
+							    </button>
+							    <button (click)="sendIcon('Cat', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Cat.png">
+							    </button>
+							    <button (click)="sendIcon('Chicken', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Chicken.png">
+							    </button>
+							    <button (click)="sendIcon('Cow', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Cow.png">
+							    </button>
+							    <button (click)="sendIcon('Dolphin', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Dolphin.png">
+							    </button>
+							    <button (click)="sendIcon('Elephant', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Elephant.png">
+							    </button>
+							    <button (click)="sendIcon('Fish', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Fish.png">
+							    </button>
+							    <button (click)="sendIcon('Frog', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Frog.png">
+							    </button>
+							    <button (click)="sendIcon('Hamster', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Hamster.png">
+							    </button>
+							    <button (click)="sendIcon('Horse', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Horse.png">
+							    </button>
+							    <button (click)="sendIcon('Horseface', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Horseface.png">
+							    </button>
+							    <button (click)="sendIcon('Koala', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Koala.png">
+							    </button>
+							    <button (click)="sendIcon('Monkey', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Monkey.png">
+							    </button>
+							    <button (click)="sendIcon('Monkeyface', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Monkeyface.png">
+							    </button>
+							    <button (click)="sendIcon('Mouse', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Mouse.png">
+							    </button>
+							    <button (click)="sendIcon('Octopus', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Octopus.png">
+							    </button>
+							    <button (click)="sendIcon('Penguin', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Penguin.png">
+							    </button>
+							    <button (click)="sendIcon('Piggy', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Piggy.png">
+							    </button>
+							    <button (click)="sendIcon('Poodle', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Poodle.png">
+							    </button>
+							    <button (click)="sendIcon('Puppy', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Puppy.png">
+							    </button>
+							    <button (click)="sendIcon('Sheep', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Sheep.png">
+							    </button>
+							    <button (click)="sendIcon('Snail', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Snail.png">
+							    </button>
+							    <button (click)="sendIcon('Snake', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Snake.png">
+							    </button>
+							    <button (click)="sendIcon('Teddy', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Teddy.png">
+							    </button>
+							    <button (click)="sendIcon('Tiger', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Tiger.png">
+							    </button>
+							    <button (click)="sendIcon('Tropicalfish', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/tropicalfish.png">
+							    </button>
+							    <button (click)="sendIcon('Whale', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Whale.png">
+							    </button>
+							    <button (click)="sendIcon('Wildboar', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Wildboar.png">
+							    </button>
+							    <button (click)="sendIcon('Wolf', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Wolf.png">
+							    </button>
+							    <button (click)="sendIcon('Yellowchick', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon2/Yellowchick.png">
+							    </button>
+							    <button (click)="sendIcon('x', 'icon2')" class="btn btn-default" style="margin-left:auto; ">
+						        	<span class="glyphicon glyphicon-remove-circle"></span>
+							    </button>
+						    </div>
+						    <div *ngIf="icons3">
+						    	<button (click)="sendIcon('Alien', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Alien.png">
+							    </button>
+							    <button (click)="sendIcon('Angry', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Angry.png">
+							    </button>
+							    <button (click)="sendIcon('Astonished', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Astonished.png">
+							    </button>
+							    <button (click)="sendIcon('Biggrin', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Biggrin.png">
+							    </button>
+							    <button (click)="sendIcon('Bigsmile', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Bigsmile.png">
+							    </button>
+							    <button (click)="sendIcon('Blushing', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Blushing.png">
+							    </button>
+							    <button (click)="sendIcon('Coldsweat', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Coldsweat.png">
+							    </button>
+							    <button (click)="sendIcon('Crying', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Crying.png">
+							    </button>
+							    <button (click)="sendIcon('Devilish', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Devilish.png">
+							    </button>
+							    <button (click)="sendIcon('Disappointed', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Disappointed.png">
+							    </button>
+							    <button (click)="sendIcon('Dizzy', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Dizzy.png">
+							    </button>
+							    <button (click)="sendIcon('Fearful', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Fearful.png">
+							    </button>
+							    <button (click)="sendIcon('Inlove', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Inlove.png">
+							    </button>
+							    <button (click)="sendIcon('Kiss', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Kiss.png">
+							    </button>
+							    <button (click)="sendIcon('Kissing', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Kissing.png">
+							    </button>
+							    <button (click)="sendIcon('Mad', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Mad.png">
+							    </button>
+							    <button (click)="sendIcon('Medic', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Medic.png">
+							    </button>
+							    <button (click)="sendIcon('Relieved', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Relieved.png">
+							    </button>
+							    <button (click)="sendIcon('Sadface', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Sadface.png">
+							    </button>
+							    <button (click)="sendIcon('Satisfied', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Satisfied.png">
+							    </button>
+							    <button (click)="sendIcon('Scared', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Scared.png">
+							    </button>
+							    <button (click)="sendIcon('Screaming', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Screaming.png">
+							    </button>
+							    <button (click)="sendIcon('Shocked', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Shocked.png">
+							    </button>
+							    <button (click)="sendIcon('Sleepy', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Sleepy.png">
+							    </button>
+							    <button (click)="sendIcon('Smiling', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Smiling.png">
+							    </button>
+							    <button (click)="sendIcon('Smirking', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Smirking.png">
+							    </button>
+							    <button (click)="sendIcon('Tears', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Tears.png">
+							    </button>
+							    <button (click)="sendIcon('Tearsofjoy', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Tearsofjoy.png">
+							    </button>
+							    <button (click)="sendIcon('Tongueout', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Tongueout.png">
+							    </button>
+							    <button (click)="sendIcon('Tonguewink', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Tonguewink.png">
+							    </button>
+							    <button (click)="sendIcon('Unamused', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Unamused.png">
+							    </button>
+							    <button (click)="sendIcon('Winking', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<img src="./assets/images/icons/icon3/Winking.png">
+							    </button>
+							    <button (click)="sendIcon('x', 'icon3')" class="btn btn-default" style="margin-left:auto; ">
+						        	<span class="glyphicon glyphicon-remove-circle"></span>
+							    </button>
+						    </div>
+					    </div>
+					</popover-content>
+					<button class="btn" [popover]="myPopover" popoverPlacement="top"><img src="./assets/images/icons/icon1/Smileyface.png"></button>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>

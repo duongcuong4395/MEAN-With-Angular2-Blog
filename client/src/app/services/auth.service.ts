@@ -61,6 +61,46 @@ export class AuthService {
     return this.http.post(this.domain + '/authentication/login', user, this.options).map(res => res.json());
   }
 
+  updateHistoryLogin(username) {
+    return this.http.post(this.domain + '/authentication/updateUserHistoryLoginInMonth/' + username, this.options).map(res => res.json());
+  }
+  
+  getUserUserHistoryLoginInMonth(username, month, year) {
+    return this.http.get(this.domain + '/authentication/getUserUserHistoryLoginInMonth/' + username + '/' + month + '/' + year).map(res => res.json());
+  }
+
+  updateHistoryWriteBlog(username) {
+      return this.http.post(this.domain + '/authentication/updateUserHistoryWriteBlogInMonth/' + username, this.options).map(res => res.json());
+    }
+  
+    getUserUserHistoryWriteBlogInMonth(username, month, year) {
+      return this.http.get(this.domain + '/authentication/getUserUserHistoryWriteBlogInMonth/' + username + '/' + month + '/' + year).map(res => res.json());
+    }
+
+  updateHistoryCommentBlog(username) {
+    return this.http.post(this.domain + '/authentication/updateUserHistoryCommentBlogInMonth/' + username, this.options).map(res => res.json());
+  }
+  
+  getUserHistoryCommentBlogInMonth(username, month, year) {
+    return this.http.get(this.domain + '/authentication/getUserHistoryCommentBlogInMonth/' + username + '/' + month + '/' + year).map(res => res.json());
+  }
+
+  updateHistoryLikeBlog(username) {
+    return this.http.post(this.domain + '/authentication/updateUserHistoryLikeBlogInMonth/' + username, this.options).map(res => res.json());
+  }
+  
+  getUserHistoryLikeBlogInMonth(username, month, year) {
+    return this.http.get(this.domain + '/authentication/getUserHistoryLikeBlogInMonth/' + username + '/' + month + '/' + year).map(res => res.json());
+  }
+
+  updateHistoryDislikeBlog(username) {
+    return this.http.post(this.domain + '/authentication/updateUserHistoryDislikeBlogInMonth/' + username, this.options).map(res => res.json());
+  }
+  
+  getUserHistoryDislikeBlogInMonth(username, month, year) {
+    return this.http.get(this.domain + '/authentication/getUserHistoryDislikeBlogInMonth/' + username + '/' + month + '/' + year).map(res => res.json());
+  }
+
   logout(){
     this.authToken = null;
     this.user = null;
