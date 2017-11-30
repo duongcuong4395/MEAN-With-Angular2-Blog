@@ -111,15 +111,15 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname + '/public/index.html'));
 });
 
-//http://localhost:port
-app.listen(port, () =>{
-	console.log("server listen port" + port);
-});
+
 
 
 const socketsPort = process.env.PORT || 1995;
 //const socket = require("socket.io").listen(socketsPort).sockets;
-const socket = require("socket.io").connect('https://duongcuongblog.herokuapp.com');
+
+var server = require('http').Server(app);
+
+var socket = require('socket.io')(server);
 
   var userArray = [];
   var userOnline = [];
@@ -265,4 +265,9 @@ socket.on("connection", (client) => {
           numberIcon : dataClientSend.numberIcon
         });
     });
+});
+
+//http://localhost:port
+server.listen(port, () =>{
+  console.log("server listen port" + port);
 });

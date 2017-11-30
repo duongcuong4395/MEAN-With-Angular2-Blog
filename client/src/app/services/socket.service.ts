@@ -8,8 +8,9 @@ import * as socket_io from 'socket.io-client';
 @Injectable()
 export class SocketService {
   
-	socketDomain = "https://duongcuongblog.herokuapp.com";
-  //socketDomain = "";
+	//socketDomain = "http://localhost:3000";
+  //socketDomain = "https://duongcuongblog.herokuapp.com";
+  socketDomain = "";
 	socket;
 
   constructor() { 
